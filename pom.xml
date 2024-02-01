@@ -15,6 +15,7 @@
 	<description>OCR Service</description>
 	<properties>
 		<java.version>21</java.version>
+		<exec.mainClass>kapia.dev.DevApplication.java</exec.mainClass>
 	</properties>
 	<dependencies>
 		<dependency>
