@@ -20,15 +20,14 @@ public class OCRService {
     final String TESSDATA_PATH = "tessdata";
 
     // Process the image
-    public ResponseEntity<String> processImage(MultipartFile image) {
+    public String processImage(MultipartFile image) throws IOException {
         
         // Convert MultipartFile to byte array
         byte[] imageArr = null;
         try {
             imageArr = image.getBytes();
         } catch (IOException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>("Error during image reading", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new IOException("Error during image reading");
         }
 
         // Convert byte array to buffer image
@@ -36,19 +35,16 @@ public class OCRService {
         try {
             bufferedImage = ImageIO.read(new ByteArrayInputStream(imageArr));
         } catch (IOException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>("Error during image reading", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new IOException("Error during image reading");
         }
 
         ITesseract tesseract = new Tesseract();
         tesseract.setDatapath(TESSDATA_PATH);
 
         try {
-            String result = tesseract.doOCR(bufferedImage);
-            return new ResponseEntity<>(result, HttpStatus.OK);
+            return tesseract.doOCR(bufferedImage);
         } catch (TesseractException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>("Error during OCR processing", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new IOException("Error during OCR processing");
         }
     }
 }
