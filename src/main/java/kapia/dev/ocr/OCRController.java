@@ -33,11 +33,8 @@ public class OCRController {
             if (!allowedTypes.contains(image.getContentType())) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File is not an image");
             }
-            byte[] imageArr = image.getBytes();
-            ResponseEntity<String> response = ocrService.processImage(imageArr);
-            System.out.println(response.getBody());
-            return response;
-        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.OK).body(ocrService.processImage(image).getBody());
+        } catch (Exception e) {
             e.printStackTrace(); // You might want to log the exception instead of printing it
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing the image");
         }
