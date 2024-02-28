@@ -1,5 +1,10 @@
 package kapia.dev.ocr;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -14,6 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @RestController
+@Tag(name = "OCR", description = "OCR API")
 public class OCRController {
 
     @Autowired
@@ -22,9 +28,15 @@ public class OCRController {
     @Value("${file.upload.content-type}")
     private String contentTypes;
 
+    @Operation(summary = "Process the image", description = "Process the image and return the text")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Image processed"),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @PostMapping(value = "/getOCR", consumes = "multipart/form-data")
     @CrossOrigin(origins = "http://localhost:4200")
-    public ResponseEntity<String> processImage(@RequestParam("image") MultipartFile image) {
+    public ResponseEntity<String> processImage(@RequestParam("image") @Parameter(name = "image", description = "Image to be processed") MultipartFile image) {
 
         List<String> allowedTypes = Arrays.asList(contentTypes.split(","));
 
