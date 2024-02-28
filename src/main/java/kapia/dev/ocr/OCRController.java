@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,7 +38,6 @@ public class OCRController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PostMapping(value = "/getOCR", consumes = "multipart/form-data")
-    @CrossOrigin(origins = "http://localhost:4200")
     public ResponseEntity<String> processImage(@RequestParam("image") @Parameter(name = "image", description = "Image to be processed") MultipartFile image) {
 
         List<String> allowedTypes = Arrays.asList(contentTypes.split(","));
