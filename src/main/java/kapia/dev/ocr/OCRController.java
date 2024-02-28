@@ -22,11 +22,15 @@ import java.util.List;
 @Tag(name = "OCR", description = "OCR API")
 public class OCRController {
 
-    @Autowired
-    OCRService ocrService;
+    private final OCRService ocrService;
 
     @Value("${file.upload.content-type}")
     private String contentTypes;
+
+    @Autowired
+    public OCRController(OCRService ocrService) {
+        this.ocrService = ocrService;
+    }
 
     @Operation(summary = "Process the image", description = "Process the image and return the text")
     @ApiResponses(value = {
