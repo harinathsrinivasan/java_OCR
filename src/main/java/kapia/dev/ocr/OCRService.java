@@ -2,7 +2,6 @@ package kapia.dev.ocr;
 
 import net.sourceforge.tess4j.ITesseract;
 import net.sourceforge.tess4j.Tesseract;
-import net.sourceforge.tess4j.TesseractException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,6 +17,8 @@ public class OCRService {
 
     // Process the image
     public String processImage(MultipartFile image) throws IOException {
+
+        if (image == null) throw new IllegalArgumentException("Error during image reading");
 
         byte[] imageArr = null;
 
@@ -40,8 +41,8 @@ public class OCRService {
 
         try {
             return tesseract.doOCR(bufferedImage);
-        } catch (TesseractException e) {
-            throw new IOException("Error during OCR processing");
+        } catch (Exception e) {
+            throw new IOException("Error during image reading");
         }
     }
 }
