@@ -46,6 +46,9 @@ public class OCRController {
             if (image == null || image.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File is empty");
             }
+            if (!image.getOriginalFilename().endsWith(".png") && !image.getOriginalFilename().endsWith(".jpeg") && !image.getOriginalFilename().endsWith(".jpg")) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File is not an image");
+            }
             if (!allowedTypes.contains(image.getContentType())) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File is not an image");
             }
