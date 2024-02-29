@@ -43,7 +43,7 @@ public class TestOCRService {
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> ocrService.processImage(null));
 
-        assertEquals("Error during image reading", exception.getMessage());
+        assertEquals("MultipartFile cannot be null", exception.getMessage());
 
     }
 
