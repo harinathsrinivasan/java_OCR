@@ -30,7 +30,13 @@ public class TestOCRController {
 
         File file = new File("src/test/resources/sample_text_jpeg.jpeg");
         MockMultipartFile multipartFile = new MockMultipartFile("image", file.getName(), "image/png", Files.readAllBytes(file.toPath()));
-        String expectedText = "It was the best of\n" + "times, it was the worst\n" + "of times, it was the age\n" + "of wisdom, it was the\n" + "age of foolishness...\n";
+        String expectedText = """
+                It was the best of
+                times, it was the worst
+                of times, it was the age
+                of wisdom, it was the
+                age of foolishness...
+                """;
         HttpStatus expectedStatus = HttpStatus.OK;
         org.springframework.test.util.ReflectionTestUtils.setField(ocrController, "contentTypes", "image/jpeg,image/png,image/jpeg");
 

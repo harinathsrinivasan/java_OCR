@@ -26,11 +26,13 @@ public class TestOCRService {
         File file = new File("src/test/resources/sample_text_png.png");
         MultipartFile multipartFile = new MockMultipartFile("file", file.getName(), "image/png", Files.readAllBytes(file.toPath()));
         String expectedText =
-                "It was the best of\n" +
-                        "times, it was the worst\n" +
-                        "of times, it was the age\n" +
-                        "of wisdom, it was the\n" +
-                        "age of foolishness...\n";
+                """
+                        It was the best of
+                        times, it was the worst
+                        of times, it was the age
+                        of wisdom, it was the
+                        age of foolishness...
+                        """;
 
         String response = ocrService.processImage(multipartFile);
 

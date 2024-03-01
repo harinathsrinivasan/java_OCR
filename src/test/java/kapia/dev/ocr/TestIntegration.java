@@ -28,11 +28,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class TestIntegration {
 
     final static String OCR_ENDPOINT = "/getOCR";
-    final static String CORRECT_RESPONSE = "It was the best of\n" +
-            "times, it was the worst\n" +
-            "of times, it was the age\n" +
-            "of wisdom, it was the\n" +
-            "age of foolishness...\n";
+    final static String CORRECT_RESPONSE = """
+            It was the best of
+            times, it was the worst
+            of times, it was the age
+            of wisdom, it was the
+            age of foolishness...
+            """;
 
     @Autowired
     private WebApplicationContext webApplicationContext;
