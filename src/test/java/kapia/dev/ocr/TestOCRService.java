@@ -1,9 +1,9 @@
 package kapia.dev.ocr;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,11 +14,23 @@ import java.nio.file.Files;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 
-@RunWith(MockitoJUnitRunner.class)
+@SpringBootTest
 public class TestOCRService {
 
-    @InjectMocks
+    @Autowired
     private OCRService ocrService;
+
+    @BeforeEach
+    public void init() {
+        System.out.println("Initializing TestOCRService");
+        ocrService = new OCRService();
+    }
+
+    @Test
+    public void ocrServiceLoads() {
+        System.out.println("Is OCRService instantiated? " + (ocrService != null));
+        assertEquals(true, ocrService != null);
+    }
 
     @Test
     public void givenImage_whenProcessImage_thenReturnText() throws IOException {
