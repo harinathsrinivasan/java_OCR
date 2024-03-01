@@ -19,6 +19,8 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class TestOCRController {
 
+    final static String ACCEPTED_CONTENT_TYPES = "image/png,image/jpeg";
+
     @InjectMocks
     private OCRController ocrController;
 
@@ -38,7 +40,7 @@ public class TestOCRController {
                 age of foolishness...
                 """;
         HttpStatus expectedStatus = HttpStatus.OK;
-        org.springframework.test.util.ReflectionTestUtils.setField(ocrController, "contentTypes", "image/jpeg,image/png,image/jpeg");
+        org.springframework.test.util.ReflectionTestUtils.setField(ocrController, "contentTypes", ACCEPTED_CONTENT_TYPES);
 
         when(ocrService.processImage(any())).thenReturn(expectedText);
 
@@ -54,7 +56,7 @@ public class TestOCRController {
 
         MockMultipartFile multipartFile = new MockMultipartFile("image", null, null, (byte[]) null);
         HttpStatus expectedStatus = HttpStatus.BAD_REQUEST;
-        org.springframework.test.util.ReflectionTestUtils.setField(ocrController, "contentTypes", "image/jpeg,image/png,image/jpeg");
+        org.springframework.test.util.ReflectionTestUtils.setField(ocrController, "contentTypes", ACCEPTED_CONTENT_TYPES);
 
         ResponseEntity<String> response = ocrController.processImage(multipartFile);
 
@@ -67,7 +69,7 @@ public class TestOCRController {
 
         MockMultipartFile multipartFile = new MockMultipartFile("image", "file.txt", "text/plain", "text".getBytes());
         HttpStatus expectedStatus = HttpStatus.BAD_REQUEST;
-        org.springframework.test.util.ReflectionTestUtils.setField(ocrController, "contentTypes", "image/jpeg,image/png,image/jpeg");
+        org.springframework.test.util.ReflectionTestUtils.setField(ocrController, "contentTypes", ACCEPTED_CONTENT_TYPES);
 
         ResponseEntity<String> response = ocrController.processImage(multipartFile);
 
