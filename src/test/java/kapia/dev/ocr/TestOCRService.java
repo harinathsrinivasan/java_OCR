@@ -11,8 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 public class TestOCRService {
@@ -29,7 +28,7 @@ public class TestOCRService {
     @Test
     public void ocrServiceLoads() {
         System.out.println("Is OCRService instantiated? " + (ocrService != null));
-        assertEquals(true, ocrService != null);
+        assertNotNull(ocrService);
     }
 
     @Test

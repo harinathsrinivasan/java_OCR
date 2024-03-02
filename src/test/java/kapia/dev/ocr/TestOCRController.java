@@ -11,7 +11,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import java.io.File;
 import java.nio.file.Files;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -51,7 +51,7 @@ public class TestOCRController {
     }
 
     @Test
-    public void givenEmptyRequest_whenProcessImage_thenReturnBadRequest() throws Exception {
+    public void givenEmptyRequest_whenProcessImage_thenReturnBadRequest() {
 
         MockMultipartFile multipartFile = new MockMultipartFile("image", null, null, (byte[]) null);
         HttpStatus expectedStatus = HttpStatus.BAD_REQUEST;
@@ -64,7 +64,7 @@ public class TestOCRController {
     }
 
     @Test
-    public void givenIncorrectFile_whenProcessImage_thenReturnBadRequest() throws Exception {
+    public void givenIncorrectFile_whenProcessImage_thenReturnBadRequest() {
 
         MockMultipartFile multipartFile = new MockMultipartFile("image", "file.txt", "text/plain", "text".getBytes());
         HttpStatus expectedStatus = HttpStatus.BAD_REQUEST;
