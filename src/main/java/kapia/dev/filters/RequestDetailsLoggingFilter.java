@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 @WebFilter(urlPatterns = "/getOCR")
 public class RequestDetailsLoggingFilter implements Filter {
 
-    Logger LOGGER = Logger.getLogger(RequestDetailsLoggingFilter.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(RequestDetailsLoggingFilter.class.getName());
 
     @Override
     public void doFilter(
