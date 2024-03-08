@@ -1,11 +1,8 @@
 <configuration>
     <property name="LOGS" value="./logs"/>
     <conversionRule conversionWord="threadId" converterClass="kapia.dev.logging.ThreadIdConverter"/>
-    <!--  Declare an appender of ConsoleAppender type  -->
-    <appender name="Console"
-              class="ch.qos.logback.core.ConsoleAppender">
-        <!-- Specify layout to be of PatternLayout type -->
-        <layout class="ch.qos.logback.classic.PatternLayout">
+    <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
             <Pattern>
                 <!--
                 %d - time and date of the log,
@@ -19,11 +16,16 @@
                 -->
                 %white(%d{ISO8601}) %highlight(%-5level) [%blue(%threadId)/%t] %magenta(%C{1}): %msg%n%throwable
             </Pattern>
-        </layout>
+        </encoder>
     </appender>
-    <appender name="RollingFile"
-              class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOGS}/spring-boot-logger.log</file>
+    <appender name="RollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOGS}/production-logger.log</file>
+        <rollingPolicy
+                class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOGS}/archived/production-logger-%d.%i.log</fileNamePattern>
+            <maxFileSize>5MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
         <encoder
                 class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <!--
@@ -37,17 +39,7 @@
             -->
             <Pattern>%d %p %C{1} [%threadId/%t] %msg%n</Pattern>
         </encoder>
-        <rollingPolicy
-                class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!--  Daily rollover, date format can be omitted, %i - when creating multiple files add index  -->
-            <fileNamePattern>${LOGS}/archived/spring-boot-logger-%d.%i.log</fileNamePattern>
-            <timeBasedFileNamingAndTriggeringPolicy
-                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <maxFileSize>5MB</maxFileSize>
-            </timeBasedFileNamingAndTriggeringPolicy>
-        </rollingPolicy>
     </appender>
-    <!--  The <root> element configures the root logger. Everything will be logged at the INFO level  -->
     <root level="info">
         <appender-ref ref="RollingFile"/>
         <appender-ref ref="Console"/>
