@@ -1,5 +1,6 @@
 <configuration>
     <property name="LOGS" value="./logs"/>
+    <conversionRule conversionWord="threadId" converterClass="kapia.dev.logging.ThreadIdConverter"/>
     <!--  Declare an appender of ConsoleAppender type  -->
     <appender name="Console"
               class="ch.qos.logback.core.ConsoleAppender">
@@ -10,12 +11,13 @@
                 %d - time and date of the log,
                 level - log level,
                 %t - thread that generated the log event,
+                %threadId - thread id,
                 %C{1} - class name of the caller,
                 %m - log message,
                 %n - new line
                 throwable - stack trace of the log event
                 -->
-                %white(%d{ISO8601}) %highlight(%-5level) [%blue(%t)] %magenta(%C{1}): %msg%n%throwable
+                %white(%d{ISO8601}) %highlight(%-5level) [%blue(%threadId)/%t] %magenta(%C{1}): %msg%n%throwable
             </Pattern>
         </layout>
     </appender>
@@ -28,11 +30,12 @@
             %d - time and date of the log,
             %p - log level,
             %C{1} - class name of the caller,
+            %threadId - thread id,
             [%t] - thread that generated the log event,
             %msg - log message,
             %n - new line
             -->
-            <Pattern>%d %p %C{1} [%t] %msg%n</Pattern>
+            <Pattern>%d %p %C{1} [%threadId/%t] %msg%n</Pattern>
         </encoder>
         <rollingPolicy
                 class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
