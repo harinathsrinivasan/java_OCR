@@ -16,12 +16,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
 @RestController
 @Tag(name = "OCR", description = "OCR API")
 public class OCRController {
 
     private final OCRService ocrService;
+
+    private final static Logger LOGGER = Logger.getLogger(OCRController.class.getName());
 
     @Value("${file.upload.content-type}")
     private String contentTypes;
@@ -44,16 +47,20 @@ public class OCRController {
 
         try {
             if (image == null || image.isEmpty()) {
+                LOGGER.info("File was empty or null");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File is empty");
             }
             if (!image.getOriginalFilename().endsWith(".png") && !image.getOriginalFilename().endsWith(".jpeg") && !image.getOriginalFilename().endsWith(".jpg")) {
+                LOGGER.info("File was not an image (wrong extension)");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File is not an image");
             }
             if (!allowedTypes.contains(image.getContentType())) {
+                LOGGER.info("File is not an image (wrong content type)");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File is not an image");
             }
             return ResponseEntity.status(HttpStatus.OK).body(ocrService.processImage(image));
         } catch (Exception e) {
+            LOGGER.severe("Error processing the image - " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing the image");
         }
     }
