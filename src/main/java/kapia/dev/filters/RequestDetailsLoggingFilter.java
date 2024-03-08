@@ -3,16 +3,17 @@ package kapia.dev.filters;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 @Component
 @WebFilter(urlPatterns = "/getOCR")
 public class RequestDetailsLoggingFilter implements Filter {
 
-    private static final Logger LOGGER = Logger.getLogger(RequestDetailsLoggingFilter.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(RequestDetailsLoggingFilter.class);
 
     @Override
     public void doFilter(

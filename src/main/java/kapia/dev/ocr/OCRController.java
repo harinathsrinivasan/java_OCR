@@ -5,6 +5,8 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -16,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Logger;
 
 @RestController
 @Tag(name = "OCR", description = "OCR API")
@@ -24,7 +25,7 @@ public class OCRController {
 
     private final OCRService ocrService;
 
-    private final static Logger LOGGER = Logger.getLogger(OCRController.class.getName());
+    private final static Logger LOGGER = LoggerFactory.getLogger(OCRController.class);
 
     @Value("${file.upload.content-type}")
     private String contentTypes;
@@ -60,7 +61,7 @@ public class OCRController {
             }
             return ResponseEntity.status(HttpStatus.OK).body(ocrService.processImage(image));
         } catch (Exception e) {
-            LOGGER.severe("Error processing the image - " + e.getMessage());
+            LOGGER.error("Error processing the image - " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing the image");
         }
     }
