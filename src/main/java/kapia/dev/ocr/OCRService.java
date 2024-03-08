@@ -10,11 +10,14 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 @Service
 public class OCRService {
 
     final String TESSDATA_PATH = "tessdata";
+
+    private static final Logger LOGGER = Logger.getLogger(OCRService.class.getName());
 
     public String processImage(MultipartFile image) throws IOException {
 
@@ -23,12 +26,14 @@ public class OCRService {
         try {
             bufferedImage = convertToImage(image);
         } catch (IOException e) {
+            LOGGER.severe("Error during image reading: " + e.getMessage());
             throw new IOException("Error during image reading");
         }
 
         try {
             return runTesseract(bufferedImage);
         } catch (Exception e) {
+            LOGGER.severe("Error during OCR processing" + e.getMessage());
             throw new IOException("Error during image reading");
         }
     }
