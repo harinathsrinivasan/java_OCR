@@ -27,17 +27,7 @@
             <maxHistory>30</maxHistory>
         </rollingPolicy>
         <encoder
-                class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <!--
-            %d - time and date of the log,
-            %p - log level,
-            %C{1} - class name of the caller,
-            %threadId - thread id,
-            [%t] - thread that generated the log event,
-            %msg - log message,
-            %n - new line
-            -->
-            <Pattern>%d %p %C{1} [%threadId/%t] %msg%n</Pattern>
+                class="ch.qos.logback.classic.encoder.JsonEncoder">
         </encoder>
     </appender>
     <root level="info">
