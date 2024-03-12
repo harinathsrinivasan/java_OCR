@@ -3,6 +3,8 @@ package kapia.dev.ocr;
 import net.sourceforge.tess4j.ITesseract;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,6 +18,8 @@ public class OCRService {
 
     final String TESSDATA_PATH = "tessdata";
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(OCRService.class);
+
     public String processImage(MultipartFile image) throws IOException {
 
         BufferedImage bufferedImage;
@@ -23,12 +27,14 @@ public class OCRService {
         try {
             bufferedImage = convertToImage(image);
         } catch (IOException e) {
+            LOGGER.error("Error during image reading: " + e.getMessage());
             throw new IOException("Error during image reading");
         }
 
         try {
             return runTesseract(bufferedImage);
         } catch (Exception e) {
+            LOGGER.error("Error during OCR processing" + e.getMessage());
             throw new IOException("Error during image reading");
         }
     }

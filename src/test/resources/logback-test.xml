@@ -1,0 +1,24 @@
+<configuration>
+    <property name="LOGS" value="./logs"/>
+    <conversionRule conversionWord="threadId" converterClass="kapia.dev.logging.ThreadIdConverter"/>
+    <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <Pattern>
+                <!--
+                %d - time and date of the log,
+                level - log level,
+                %t - thread that generated the log event,
+                %threadId - thread id,
+                %C{1} - class name of the caller,
+                %m - log message,
+                %n - new line
+                throwable - stack trace of the log event
+                -->
+                %white(%d{ISO8601}) %highlight(%-5level) [%blue(%threadId)/%t] %magenta(%C{1}): %msg%n%throwable
+            </Pattern>
+        </encoder>
+    </appender>
+    <root level="debug">
+        <appender-ref ref="Console"/>
+    </root>
+</configuration>
