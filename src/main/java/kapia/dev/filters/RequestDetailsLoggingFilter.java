@@ -26,11 +26,11 @@ public class RequestDetailsLoggingFilter implements Filter {
 
         /*
 
-         There may be multiple X-Forwarded-For headers present in a request. Additionally, the client can forge this header.
-         Generally, this header cannot be trusted and might exploit the application (Log4Shell, for example).
+         There may be multiple X-Forwarded-For headers present in a request and the client can forge this header.
+         Generally, this header cannot be trusted and might exploit the application (Log4Shell).
          For the purpose of this project, only the first header is considered and the first IP address.
 
-         The IP address is validated and checked for length, to avoid logging garbage.
+         The IP address is validated and checked for length to avoid logging garbage.
 
         */
 

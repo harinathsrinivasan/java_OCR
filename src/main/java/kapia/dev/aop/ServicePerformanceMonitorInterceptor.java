@@ -53,6 +53,6 @@ public class ServicePerformanceMonitorInterceptor extends AbstractMonitoringInte
     }
 
     public void setLoggingLevel(String loggingLevel) {
-        this.loggingLevel = loggingLevel.toUpperCase().trim();
+        ServicePerformanceMonitorInterceptor.loggingLevel = loggingLevel.toUpperCase().trim();
     }
 }
