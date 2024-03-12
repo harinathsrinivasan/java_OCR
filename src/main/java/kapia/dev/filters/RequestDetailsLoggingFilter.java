@@ -30,21 +30,14 @@ public class RequestDetailsLoggingFilter implements Filter {
          Generally, this header cannot be trusted and might exploit the application (Log4Shell).
          For the purpose of this project, only the first header is considered and the first IP address.
 
-         The IP address is validated and checked for length to avoid logging garbage.
-
         */
 
         String ipAddress = httpRequest.getHeader("X-FORWARDED-FOR");
-        if (ipAddress != null && !ipAddress.isEmpty()) {
-            String[] ipAddresses = ipAddress.split(",");
-            ipAddress = ipAddresses[0].trim();
-            String ip4 = "^((25[0-5]|(2[0-4]|1\\d|[1-9]|)\\d)\\.?\\b){4}$";
-            String ip6 = "^(?:[A-F0-9]{1,4}:){7}[A-F0-9]{1,4}$";
-            if ((!ipAddress.matches(ip4) && !ipAddress.matches(ip6)) || ipAddress.length() > 15) {
-                ipAddress = httpRequest.getRemoteAddr();
-            }
+
+        if (validateIpAddress(ipAddress, httpRequest)) {
+            ipAddress = hashIpAddress(ipAddress);
         } else {
-            ipAddress = request.getRemoteAddr();
+            ipAddress = hashIpAddress(httpRequest.getRemoteAddr());
         }
 
         LOGGER.info(String.format("Request details: contentType=%s, contentLength=%d, clientIpAddress=%s",
@@ -55,4 +48,25 @@ public class RequestDetailsLoggingFilter implements Filter {
         chain.doFilter(request, response);
     }
 
+    private String hashIpAddress(String ipAddress) {
+        try {
+            java.security.MessageDigest md = java.security.MessageDigest.getInstance("SHA-256");
+            byte[] hash = md.digest(ipAddress.getBytes());
+            return new java.math.BigInteger(1, hash).toString(16);
+        } catch (java.security.NoSuchAlgorithmException e) {
+            LOGGER.error("Error while hashing IP address", e);
+            return null;
+        }
+    }
+
+    private boolean validateIpAddress(String ipAddress, HttpServletRequest request) {
+        if (ipAddress != null && !ipAddress.isEmpty()) {
+            String[] ipAddresses = ipAddress.split(",");
+            ipAddress = ipAddresses[0].trim();
+            String ip4 = "^((25[0-5]|(2[0-4]|1\\d|[1-9]|)\\d)\\.?\\b){4}$";
+            String ip6 = "^(?:[A-F0-9]{1,4}:){7}[A-F0-9]{1,4}$";
+            return ipAddress.matches(ip4) || !ipAddress.matches(ip6);
+        }
+        return false;
+    }
 }
