@@ -1,5 +1,6 @@
 package kapia.dev.ocr;
 
+import net.sourceforge.tess4j.TesseractException;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -13,7 +14,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -40,7 +43,6 @@ public class TestOCRController {
                 age of foolishness...
                 """;
         HttpStatus expectedStatus = HttpStatus.OK;
-        org.springframework.test.util.ReflectionTestUtils.setField(ocrController, "contentTypes", ACCEPTED_CONTENT_TYPES);
 
         when(ocrService.processImage(any())).thenReturn(expectedText);
 
@@ -52,28 +54,28 @@ public class TestOCRController {
     }
 
     @Test
-    public void givenEmptyRequest_whenProcessImage_thenReturnBadRequest() throws IOException {
+    public void givenIOException_whenProcessImage_thenReturnInternalServerError() throws IOException, TesseractException {
 
-        MockMultipartFile multipartFile = new MockMultipartFile("image", null, null, (byte[]) null);
-        HttpStatus expectedStatus = HttpStatus.BAD_REQUEST;
-        org.springframework.test.util.ReflectionTestUtils.setField(ocrController, "contentTypes", ACCEPTED_CONTENT_TYPES);
+        File file = new File("src/test/resources/sample_text_jpeg.jpeg");
+        MockMultipartFile multipartFile = new MockMultipartFile("image", file.getName(), "image/png", Files.readAllBytes(file.toPath()));
 
-        ResponseEntity<String> response = ocrController.processImage(multipartFile);
+        when(ocrService.processImage(any())).thenThrow(new IOException());
 
-        assertEquals(expectedStatus, response.getStatusCode());
+        assertThrows(IOException.class, () -> ocrController.processImage(multipartFile));
 
     }
 
     @Test
-    public void givenIncorrectFile_whenProcessImage_thenReturnBadRequest() throws IOException {
+    public void givenTesseractException_whenProcessImage_thenReturnInternalServerError() throws TesseractException, IOException {
 
-        MockMultipartFile multipartFile = new MockMultipartFile("image", "file.txt", "text/plain", "text".getBytes());
-        HttpStatus expectedStatus = HttpStatus.BAD_REQUEST;
-        org.springframework.test.util.ReflectionTestUtils.setField(ocrController, "contentTypes", ACCEPTED_CONTENT_TYPES);
+        File file = new File("src/test/resources/sample_text_jpeg.jpeg");
+        MockMultipartFile multipartFile = new MockMultipartFile("image", file.getName(), "image/png", Files.readAllBytes(file.toPath()));
 
-        ResponseEntity<String> response = ocrController.processImage(multipartFile);
+        given(ocrService.processImage(any())).willAnswer(invocation -> {
+            throw new TesseractException("Error processing the image");
+        });
 
-        assertEquals(expectedStatus, response.getStatusCode());
+        assertThrows(TesseractException.class, () -> ocrController.processImage(multipartFile));
 
     }
 

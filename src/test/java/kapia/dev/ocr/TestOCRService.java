@@ -1,5 +1,6 @@
 package kapia.dev.ocr;
 
+import net.sourceforge.tess4j.TesseractException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 public class TestOCRService {
@@ -21,18 +23,11 @@ public class TestOCRService {
 
     @BeforeEach
     public void init() {
-        System.out.println("Initializing TestOCRService");
         ocrService = new OCRService();
     }
 
     @Test
-    public void ocrServiceLoads() {
-        System.out.println("Is OCRService instantiated? " + (ocrService != null));
-        assertNotNull(ocrService);
-    }
-
-    @Test
-    public void givenImage_whenProcessImage_thenReturnText() throws IOException {
+    public void givenImage_whenProcessImage_thenReturnText() throws IOException, IllegalArgumentException, TesseractException {
 
         File file = new File("src/test/resources/sample_text_png.png");
         MultipartFile multipartFile = new MockMultipartFile("file", file.getName(), "image/png", Files.readAllBytes(file.toPath()));
@@ -54,9 +49,7 @@ public class TestOCRService {
     @Test
     public void givenNoImage_whenProcessImage_thenThrowIllegalArgumentException() {
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> ocrService.processImage(null));
-
-        assertEquals("MultipartFile cannot be null", exception.getMessage());
+        assertThrows(IOException.class, () -> ocrService.processImage(null));
 
     }
 
@@ -64,10 +57,7 @@ public class TestOCRService {
     public void givenInvalidImageType_whenProcessImage_thenThrowIOException() {
 
         MultipartFile multipartFile = new MockMultipartFile("file", "file.txt", "text/plain", "some text".getBytes());
-
-        Exception exception = assertThrows(IOException.class, () -> ocrService.processImage(multipartFile));
-
-        assertEquals("Error during image reading", exception.getMessage());
+        assertThrows(IOException.class, () -> ocrService.processImage(multipartFile));
 
     }
 

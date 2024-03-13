@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import net.sourceforge.tess4j.TesseractException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,14 +38,9 @@ public class OCRController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PostMapping(value = "/getOCR", consumes = "multipart/form-data")
-    public ResponseEntity<String> processImage(@RequestParam("image") @Parameter(name = "image", description = "Image to be processed") MultipartFile image) throws IOException {
+    public ResponseEntity<String> processImage(@RequestParam("image") @Parameter(name = "image", description = "Image to be processed") MultipartFile image) throws IOException, TesseractException {
 
-        try {
-            return ResponseEntity.status(HttpStatus.OK).body(ocrService.processImage(image));
-        } catch (IOException e) {
-            LOGGER.error("Error processing the image - " + e.getMessage());
-            throw new IOException("Error processing the image");
-        }
+        return ResponseEntity.status(HttpStatus.OK).body(ocrService.processImage(image));
 
     }
 }
