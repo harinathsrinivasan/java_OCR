@@ -81,11 +81,12 @@ public class RateLimitingFilter extends OncePerRequestFilter {
         if (probe.isConsumed()) {
             LOGGER.info("Token consumed");
             response.addHeader("X-Rate-Limit-Remaining", Long.toString(probe.getRemainingTokens()));
+            return false;
         } else {
             LOGGER.info("Limit exceeded");
             response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
             response.addHeader("X-Rate-Limit-Retry-After-Seconds", Long.toString(Duration.ofNanos(probe.getNanosToWaitForRefill()).getSeconds()));
+            return true;
         }
-        return true;
     }
 }
