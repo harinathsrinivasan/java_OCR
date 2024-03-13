@@ -31,6 +31,11 @@ public class RateLimitingFilter extends OncePerRequestFilter {
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
 
+        if (!request.getRequestURI().equals("/getOCR")) {
+            chain.doFilter(request, response);
+            return;
+        }
+
         if (hasAdminRole(request)) {
             LOGGER.info("Resolved rate limiting for ROLE_ADMIN");
             chain.doFilter(request, response);
