@@ -33,7 +33,7 @@ public class OCRService {
 
         try {
             return runTesseract(bufferedImage);
-        } catch (Exception e) {
+        } catch (TesseractException e) {
             LOGGER.error("Error during OCR processing" + e.getMessage());
             throw new IOException("Error during image reading");
         }

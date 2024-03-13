@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -51,7 +52,7 @@ public class TestOCRController {
     }
 
     @Test
-    public void givenEmptyRequest_whenProcessImage_thenReturnBadRequest() {
+    public void givenEmptyRequest_whenProcessImage_thenReturnBadRequest() throws IOException {
 
         MockMultipartFile multipartFile = new MockMultipartFile("image", null, null, (byte[]) null);
         HttpStatus expectedStatus = HttpStatus.BAD_REQUEST;
@@ -64,7 +65,7 @@ public class TestOCRController {
     }
 
     @Test
-    public void givenIncorrectFile_whenProcessImage_thenReturnBadRequest() {
+    public void givenIncorrectFile_whenProcessImage_thenReturnBadRequest() throws IOException {
 
         MockMultipartFile multipartFile = new MockMultipartFile("image", "file.txt", "text/plain", "text".getBytes());
         HttpStatus expectedStatus = HttpStatus.BAD_REQUEST;
