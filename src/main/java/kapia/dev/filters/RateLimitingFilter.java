@@ -7,6 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import kapia.dev.ratelimiting.RateLimitingService;
+import kapia.dev.util.IpResolverService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +22,13 @@ import java.time.Duration;
 public class RateLimitingFilter extends OncePerRequestFilter {
 
     private final RateLimitingService rateLimitingService;
+    private final IpResolverService ipResolverService;
     private static final Logger LOGGER = LoggerFactory.getLogger(RateLimitingFilter.class);
 
     @Autowired
-    public RateLimitingFilter(RateLimitingService rateLimitingService) {
+    public RateLimitingFilter(RateLimitingService rateLimitingService, IpResolverService ipResolverService) {
         this.rateLimitingService = rateLimitingService;
+        this.ipResolverService = ipResolverService;
     }
 
     @Override
@@ -41,10 +44,19 @@ public class RateLimitingFilter extends OncePerRequestFilter {
             chain.doFilter(request, response);
             return;
         }
-        if (handleRateLimitingWithApiKey(request, response)) {
-            return;
-        }
-        if (handleRateLimitingWithIp(request, response)) {
+        if (hasApiKey(request)) {
+            LOGGER.info("Trying to resolve limit for API key");
+            if (canConsumeTokenWithKey(request, response)) {
+                return;
+            }
+        } else if (hasValidIp(getIp(request))) {
+            LOGGER.info("Trying to resolve limit for IP address");
+            if (canConsumeTokenWithIp(request, response)) {
+                return;
+            }
+        } else {
+            LOGGER.info("Request did not have a valid API key or IP address");
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
             return;
         }
 
@@ -55,29 +67,36 @@ public class RateLimitingFilter extends OncePerRequestFilter {
         return request.isUserInRole("ROLE_ADMIN");
     }
 
-    private boolean handleRateLimitingWithApiKey(HttpServletRequest request, HttpServletResponse response) {
+    private boolean hasApiKey(HttpServletRequest request) {
         String apiKey = request.getHeader("x-api-key");
-        if (apiKey != null && !apiKey.isEmpty()) {
-            LOGGER.info("Handling rate limiting with API key");
-            Bucket bucket = rateLimitingService.resolveBucketFromKey(apiKey);
-            ConsumptionProbe probe = bucket.tryConsumeAndReturnRemaining(1);
-            return handleRateLimitResult(probe, response);
-        }
-        return false;
+        return apiKey != null && !apiKey.isEmpty();
     }
 
-    private boolean handleRateLimitingWithIp(HttpServletRequest request, HttpServletResponse response) {
-        String ip = request.getRemoteAddr();
+    private boolean canConsumeTokenWithKey(HttpServletRequest request, HttpServletResponse response) {
+        Bucket bucket = rateLimitingService.resolveBucketFromKey(request.getHeader("x-api-key"));
+        ConsumptionProbe probe = bucket.tryConsumeAndReturnRemaining(1);
+        return canConsumeToken(probe, response);
+    }
+
+    private String getIp(HttpServletRequest request) {
+        return ipResolverService.extractIpFromRequest(request);
+    }
+
+    private boolean hasValidIp(String ip) {
+        return ipResolverService.isIpAddressValid(ip);
+    }
+
+    private boolean canConsumeTokenWithIp(HttpServletRequest request, HttpServletResponse response) {
+        String ip = getIp(request);
         if (ip != null && !ip.isEmpty()) {
-            LOGGER.info("Handling rate limiting with IP");
             Bucket bucket = rateLimitingService.resolveBucketFromIp(ip);
             ConsumptionProbe probe = bucket.tryConsumeAndReturnRemaining(1);
-            return handleRateLimitResult(probe, response);
+            return canConsumeToken(probe, response);
         }
         return false;
     }
 
-    private boolean handleRateLimitResult(ConsumptionProbe probe, HttpServletResponse response) {
+    private boolean canConsumeToken(ConsumptionProbe probe, HttpServletResponse response) {
         if (probe.isConsumed()) {
             LOGGER.info("Token consumed");
             response.addHeader("X-Rate-Limit-Remaining", Long.toString(probe.getRemainingTokens()));
