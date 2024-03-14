@@ -1,5 +1,6 @@
 package kapia.dev.exceptionhandling;
 
+import kapia.dev.ocr.OCRController;
 import net.sourceforge.tess4j.TesseractException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +13,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import java.io.IOException;
 
-@ControllerAdvice
+@ControllerAdvice(assignableTypes = {OCRController.class})
 public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(ResponseExceptionHandler.class);

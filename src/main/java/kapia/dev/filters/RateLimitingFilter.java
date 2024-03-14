@@ -69,7 +69,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
     }
 
     private boolean hasAdminRole(HttpServletRequest request) {
-        return request.isUserInRole("ROLE_ADMIN");
+        return request.isUserInRole("ROLE_ADMIN") || request.isUserInRole("ROLE_SUPERUSER");
     }
 
     private boolean hasApiKey(HttpServletRequest request) {
