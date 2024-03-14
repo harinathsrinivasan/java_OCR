@@ -32,6 +32,10 @@ public class SecurityConfig {
             "/swagger-ui/**"
     };
 
+    private static final String[] ADMIN_WHITELIST = {
+            "/actuator/**"
+    };
+
     @Bean
     public UserDetailsService userDetailsService() {
         UserDetails admin = org.springframework.security.core.userdetails.User.withUsername("admin")
@@ -50,6 +54,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/getOCR").permitAll()
                         .requestMatchers(HttpMethod.GET, AUTH_WHITELIST).permitAll()
+                        .requestMatchers(HttpMethod.GET, ADMIN_WHITELIST).hasRole("ADMIN")
                         .anyRequest().denyAll()
                 );
 
