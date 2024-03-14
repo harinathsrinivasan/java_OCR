@@ -32,14 +32,12 @@ public class IpResolverService {
 
     public String extractIpFromRequestIfValid(HttpServletRequest request) {
         String ip = extractIpFromRequest(request);
-        return isIpAddressValid(ip) ? ip : "INVALID_IP_ADDRESS";
+        return isIpAddressValid(ip) ? ip : null;
     }
 
     public boolean isIpAddressValid(String ip) {
-
         InetAddressValidator validator = InetAddressValidator.getInstance();
         return validator.isValidInet4Address(ip) || validator.isValidInet6Address(ip);
-
     }
 
 }

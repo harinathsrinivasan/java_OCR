@@ -7,6 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import kapia.dev.ratelimiting.RateLimitingService;
+import kapia.dev.util.HashingService;
 import kapia.dev.util.IpResolverService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,12 +24,14 @@ public class RateLimitingFilter extends OncePerRequestFilter {
 
     private final RateLimitingService rateLimitingService;
     private final IpResolverService ipResolverService;
+    private final HashingService hashingService;
     private static final Logger LOGGER = LoggerFactory.getLogger(RateLimitingFilter.class);
 
     @Autowired
-    public RateLimitingFilter(RateLimitingService rateLimitingService, IpResolverService ipResolverService) {
+    public RateLimitingFilter(RateLimitingService rateLimitingService, IpResolverService ipResolverService, HashingService hashingService) {
         this.rateLimitingService = rateLimitingService;
         this.ipResolverService = ipResolverService;
+        this.hashingService = hashingService;
     }
 
     @Override
@@ -46,12 +49,14 @@ public class RateLimitingFilter extends OncePerRequestFilter {
         }
         if (hasApiKey(request)) {
             LOGGER.info("Trying to resolve limit for API key");
-            if (canConsumeTokenWithKey(request, response)) {
+            String key = hashingService.hashKey(extractApiKey(request));
+            if (canConsumeTokenWithKey(response, key)) {
                 return;
             }
-        } else if (hasValidIp(getIp(request))) {
+        } else if (hasValidIp(ipResolverService.extractIpFromRequest(request))) {
+            String ip = hashingService.hash(ipResolverService.extractIpFromRequestIfValid(request));
             LOGGER.info("Trying to resolve limit for IP address");
-            if (canConsumeTokenWithIp(request, response)) {
+            if (canConsumeTokenWithIp(response, ip)) {
                 return;
             }
         } else {
@@ -68,12 +73,16 @@ public class RateLimitingFilter extends OncePerRequestFilter {
     }
 
     private boolean hasApiKey(HttpServletRequest request) {
-        String apiKey = request.getHeader("x-api-key");
+        String apiKey = extractApiKey(request);
         return apiKey != null && !apiKey.isEmpty();
     }
 
-    private boolean canConsumeTokenWithKey(HttpServletRequest request, HttpServletResponse response) {
-        Bucket bucket = rateLimitingService.resolveBucketFromKey(request.getHeader("x-api-key"));
+    private String extractApiKey(HttpServletRequest request) {
+        return request.getHeader("x-api-key");
+    }
+
+    private boolean canConsumeTokenWithKey(HttpServletResponse response, String key) {
+        Bucket bucket = rateLimitingService.resolveBucketFromKey(key);
         ConsumptionProbe probe = bucket.tryConsumeAndReturnRemaining(1);
         return canConsumeToken(probe, response);
     }
@@ -86,14 +95,10 @@ public class RateLimitingFilter extends OncePerRequestFilter {
         return ipResolverService.isIpAddressValid(ip);
     }
 
-    private boolean canConsumeTokenWithIp(HttpServletRequest request, HttpServletResponse response) {
-        String ip = getIp(request);
-        if (ip != null && !ip.isEmpty()) {
-            Bucket bucket = rateLimitingService.resolveBucketFromIp(ip);
-            ConsumptionProbe probe = bucket.tryConsumeAndReturnRemaining(1);
-            return canConsumeToken(probe, response);
-        }
-        return false;
+    private boolean canConsumeTokenWithIp(HttpServletResponse response, String ip) {
+        Bucket bucket = rateLimitingService.resolveBucketFromIp(ip);
+        ConsumptionProbe probe = bucket.tryConsumeAndReturnRemaining(1);
+        return canConsumeToken(probe, response);
     }
 
     private boolean canConsumeToken(ConsumptionProbe probe, HttpServletResponse response) {

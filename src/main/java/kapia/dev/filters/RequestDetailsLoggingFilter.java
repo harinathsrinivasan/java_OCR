@@ -3,6 +3,7 @@ package kapia.dev.filters;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
+import kapia.dev.util.HashingService;
 import kapia.dev.util.IpResolverService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,10 +19,12 @@ public class RequestDetailsLoggingFilter implements Filter {
     private static final Logger LOGGER = LoggerFactory.getLogger(RequestDetailsLoggingFilter.class);
 
     private IpResolverService ipResolverService;
+    private HashingService hashingService;
 
     @Autowired
-    public RequestDetailsLoggingFilter(IpResolverService ipResolverService) {
+    public RequestDetailsLoggingFilter(IpResolverService ipResolverService, HashingService hashingService) {
         this.ipResolverService = ipResolverService;
+        this.hashingService = hashingService;
     }
 
     @Override
@@ -33,8 +36,7 @@ public class RequestDetailsLoggingFilter implements Filter {
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
 
-
-        String ipAddress = ipResolverService.extractIpFromRequestIfValid(httpRequest);
+        String ipAddress = hashingService.hash(ipResolverService.extractIpFromRequestIfValid(httpRequest));
 
         LOGGER.info(String.format("Request details: contentType=%s, contentLength=%d, clientIpAddress=%s",
                 httpRequest.getContentType(),
