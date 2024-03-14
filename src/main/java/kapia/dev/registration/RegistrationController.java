@@ -1,5 +1,6 @@
 package kapia.dev.registration;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
+@Hidden
 public class RegistrationController {
 
     private final RegistrationService registrationService;
