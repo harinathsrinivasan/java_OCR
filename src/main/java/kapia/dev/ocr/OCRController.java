@@ -2,6 +2,7 @@ package kapia.dev.ocr;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -31,11 +32,11 @@ public class OCRController {
         this.ocrService = ocrService;
     }
 
-    @Operation(summary = "Process the image", description = "Process the image and return the text")
+    @Operation(summary = "Process the image", description = "Endpoint that processes the image and returns the text found in it.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Image processed"),
-            @ApiResponse(responseCode = "400", description = "Bad request"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
+            @ApiResponse(responseCode = "200", description = "Image processed", content = @Content(mediaType = "text/plain")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = "text/plain")),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "text/plain"))
     })
     @PostMapping(value = "/getOCR", consumes = "multipart/form-data")
     public ResponseEntity<String> processImage(@RequestParam("image") @Parameter(name = "image", description = "Image to be processed") MultipartFile image) throws IOException, TesseractException {
