@@ -28,7 +28,8 @@ public class FileValidationFilter extends OncePerRequestFilter {
         try {
             validateRequest(request);
         } catch (ValidationException e) {
-            response.sendError(e.getStatusCode(), e.getMessage());
+            response.setStatus(e.getStatusCode());
+            response.getWriter().write(e.getMessage());
             return;
         }
 
