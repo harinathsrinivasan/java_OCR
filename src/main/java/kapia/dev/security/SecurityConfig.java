@@ -1,5 +1,6 @@
 package kapia.dev.security;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -32,10 +33,17 @@ public class SecurityConfig {
             "/swagger-ui/**"
     };
 
+    @Value("${admin.username}")
+    private String defaultAdminUsername;
+
+    @Value("${admin.password}")
+    private String defaultAdminPassword;
+
     @Bean
     public UserDetailsService userDetailsService() {
-        UserDetails admin = org.springframework.security.core.userdetails.User.withUsername("admin")
-                .password(this.passwordEncoder().encode("admin"))
+
+        UserDetails admin = org.springframework.security.core.userdetails.User.withUsername(this.defaultAdminUsername)
+                .password(this.passwordEncoder().encode(this.defaultAdminPassword))
                 .roles("ADMIN")
                 .build();
 
