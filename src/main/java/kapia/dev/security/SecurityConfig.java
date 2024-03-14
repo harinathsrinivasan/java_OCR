@@ -42,23 +42,17 @@ public class SecurityConfig {
     };
 
     @Value("${su.username}")
-    private String superUserUsername;
+    private String superuserUsername;
 
     @Value("${su.password}")
-    private String superUserPassword;
+    private String superuserPassword;
 
-//    @Bean
-//    public UserDetailsService userDetailsService() {
-//
-//        UserDetails superUser = org.springframework.security.core.userdetails.User.withUsername(this.superUserUsername)
-//                .password(this.passwordEncoder().encode(this.superUserPassword))
-//                .roles("SUPERUSER")
-//                .build();
-//
-//        return new InMemoryUserDetailsManager(superUser);
-//    }
+    @Value("${admin.role.name:ROLE_ADMIN}")
+    private String ROLE_ADMIN;
 
-    // Use CustomUserDetailsService instead of InMemoryUserDetailsManager
+    @Value("${superuser.role.name:ROLE_SUPERUSER}")
+    private String ROLE_SUPERUSER;
+
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
 
@@ -71,7 +65,7 @@ public class SecurityConfig {
     @PostConstruct
     public void createSuperUser() {
         customUserDetailsService = applicationContext.getBean(CustomUserDetailsService.class);
-        customUserDetailsService.createSuperUser(superUserUsername, superUserPassword);
+        customUserDetailsService.createSuperUser(superuserUsername, superuserPassword);
     }
 
     @Bean
@@ -94,7 +88,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/getOCR").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/register").hasAnyRole("SUPERUSER", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/register").hasAnyAuthority(ROLE_ADMIN, ROLE_SUPERUSER)
                         .requestMatchers(HttpMethod.GET, AUTH_WHITELIST).permitAll()
                         .anyRequest().denyAll()
                 )
