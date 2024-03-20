@@ -12,6 +12,7 @@ import kapia.dev.util.IpResolverService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -26,6 +27,12 @@ public class RateLimitingFilter extends OncePerRequestFilter {
     private final IpResolverService ipResolverService;
     private final HashingService hashingService;
     private static final Logger LOGGER = LoggerFactory.getLogger(RateLimitingFilter.class);
+
+    @Value("${admin.role.name:ROLE_ADMIN}")
+    private String ROLE_ADMIN;
+
+    @Value("${superuser.role.name:ROLE_SUPERUSER}")
+    private String ROLE_SUPERUSER;
 
     @Autowired
     public RateLimitingFilter(RateLimitingService rateLimitingService, IpResolverService ipResolverService, HashingService hashingService) {
@@ -42,8 +49,8 @@ public class RateLimitingFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (hasAdminRole(request)) {
-            LOGGER.info("Resolved rate limiting for ROLE_ADMIN");
+        if (hasPrivilegedRole(request)) {
+            LOGGER.info("Resolved rate limiting for admin or superuser");
             chain.doFilter(request, response);
             return;
         }
@@ -68,8 +75,8 @@ public class RateLimitingFilter extends OncePerRequestFilter {
         chain.doFilter(request, response);
     }
 
-    private boolean hasAdminRole(HttpServletRequest request) {
-        return request.isUserInRole("ROLE_ADMIN");
+    private boolean hasPrivilegedRole(HttpServletRequest request) {
+        return request.isUserInRole(ROLE_ADMIN) || request.isUserInRole(ROLE_SUPERUSER);
     }
 
     private boolean hasApiKey(HttpServletRequest request) {
@@ -85,10 +92,6 @@ public class RateLimitingFilter extends OncePerRequestFilter {
         Bucket bucket = rateLimitingService.resolveBucketFromKey(key);
         ConsumptionProbe probe = bucket.tryConsumeAndReturnRemaining(1);
         return canConsumeToken(probe, response);
-    }
-
-    private String getIp(HttpServletRequest request) {
-        return ipResolverService.extractIpFromRequest(request);
     }
 
     private boolean hasValidIp(String ip) {
