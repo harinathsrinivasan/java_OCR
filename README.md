@@ -116,7 +116,7 @@ The application is a working prototype that is standalone and not suitable for r
 - Offer OCR reading in multiple languages.
 
 <!-- STACK -->
-### Built With
+## Built With
 
 [![bucket4j][bucket4j]][bucket4j-url]
 [![H2][H2]][H2-url]
