@@ -18,7 +18,20 @@
             </Pattern>
         </encoder>
     </appender>
+    <appender name="RollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOGS}/test-logger.log</file>
+        <rollingPolicy
+                class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOGS}/archived/test/test-logger-%d.%i.log</fileNamePattern>
+            <maxFileSize>5MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder
+                class="ch.qos.logback.classic.encoder.JsonEncoder">
+        </encoder>
+    </appender>
     <root level="debug">
         <appender-ref ref="Console"/>
+        <appender-ref ref="RollingFile"/>
     </root>
 </configuration>
