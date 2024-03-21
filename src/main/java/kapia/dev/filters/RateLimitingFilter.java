@@ -55,14 +55,14 @@ public class RateLimitingFilter extends OncePerRequestFilter {
             return;
         }
         if (hasApiKey(request)) {
-            LOGGER.info("Trying to resolve limit for API key");
             String key = hashingService.hashKey(extractApiKey(request));
+            LOGGER.info("Trying to resolve limit for API key: " + key);
             if (canConsumeTokenWithKey(response, key)) {
                 return;
             }
         } else if (hasValidIp(ipResolverService.extractIpFromRequest(request))) {
             String ip = hashingService.hash(ipResolverService.extractIpFromRequestIfValid(request));
-            LOGGER.info("Trying to resolve limit for IP address");
+            LOGGER.info("Trying to resolve limit for IP address: " + ip);
             if (canConsumeTokenWithIp(response, ip)) {
                 return;
             }

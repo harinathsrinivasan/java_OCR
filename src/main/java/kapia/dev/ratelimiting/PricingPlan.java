@@ -2,6 +2,7 @@ package kapia.dev.ratelimiting;
 
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Refill;
+import org.springframework.core.env.Environment;
 
 import java.time.Duration;
 
@@ -9,22 +10,29 @@ public enum PricingPlan {
 
     FREE {
         @Override
-        Bandwidth getLimit() {
-            return Bandwidth.classic(1, Refill.intervally(1, Duration.ofHours(1)));
+        Bandwidth getLimit(Environment environment) {
+            return getBandwidth(environment, "free");
         }
     },
     BASIC {
         @Override
-        Bandwidth getLimit() {
-            return Bandwidth.classic(2, Refill.intervally(2, Duration.ofHours(1)));
+        Bandwidth getLimit(Environment environment) {
+            return getBandwidth(environment, "basic");
         }
     },
     PRO {
         @Override
-        Bandwidth getLimit() {
-            return Bandwidth.classic(3, Refill.intervally(3, Duration.ofHours(1)));
+        Bandwidth getLimit(Environment environment) {
+            return getBandwidth(environment, "pro");
         }
     };
+
+    static private Bandwidth getBandwidth(Environment environment, String plan) {
+        int capacity = environment.getProperty("pricing.plans." + plan + ".limit.capacity", Integer.class, 1);
+        int refillTokens = environment.getProperty("pricing.plans." + plan + ".limit.tokens", Integer.class, 1);
+        int refillDuration = environment.getProperty("pricing.plans." + plan + ".refill.rate", Integer.class, 1);
+        return Bandwidth.classic(capacity, Refill.intervally(refillTokens, Duration.ofHours(refillDuration)));
+    }
 
     static PricingPlan resolvePlanFromKey(String apiKey) {
         if (apiKey == null || apiKey.isEmpty()) {
@@ -39,5 +47,5 @@ public enum PricingPlan {
         return FREE;
     }
 
-    abstract Bandwidth getLimit();
+    abstract Bandwidth getLimit(Environment environment);
 }
