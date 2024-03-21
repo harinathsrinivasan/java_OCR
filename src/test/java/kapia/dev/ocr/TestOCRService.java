@@ -4,14 +4,13 @@ import net.sourceforge.tess4j.TesseractException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.util.ReflectionUtils;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.nio.file.Files;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -20,16 +19,16 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SpringBootTest
 public class TestOCRService {
 
+    @Value("${tessdata.path:tessdata}")
+    private String TESSDATA_PATH;
+
     @Autowired
     private OCRService ocrService;
 
     @BeforeEach
-    public void init() throws NoSuchFieldException {
+    public void init() {
         ocrService = new OCRService();
-        Field field = ocrService.getClass().getDeclaredField("TESSDATA_PATH");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, ocrService, "tessdata");
-
+        org.springframework.test.util.ReflectionTestUtils.setField(ocrService, "TESSDATA_PATH", TESSDATA_PATH);
     }
 
     @Test
