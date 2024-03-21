@@ -11,11 +11,16 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 @Component
 public class FileValidationFilter extends OncePerRequestFilter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FileValidationFilter.class);
+    private static final String ACCEPTED_CONTENT_TYPES = "image/png,image/jpeg";
+    private static final String ACCEPTED_EXTENSIONS = ".png,.jpeg,.jpg";
+    private static final String ACCEPTED_REQUEST_CONTENT_TYPE = "multipart/form-data";
+    private static final String MULTIPART_FILE_NAME = "image";
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -27,45 +32,48 @@ public class FileValidationFilter extends OncePerRequestFilter {
 
         try {
             validateRequest(request);
+            filterChain.doFilter(request, response);
         } catch (ValidationException e) {
+            LOGGER.debug(e.getMessage());
             response.setStatus(e.getStatusCode());
             response.getWriter().write(e.getMessage());
-            return;
         }
-
-        filterChain.doFilter(request, response);
-
     }
 
-    private void validateRequest(HttpServletRequest request) throws ValidationException, ServletException, IOException {
+    private void validateRequest(HttpServletRequest request) throws ValidationException, IOException, ServletException {
+        validateContentType(request);
+        validateImagePart(request);
+    }
 
+    private void validateContentType(HttpServletRequest request) throws ValidationException {
         String contentType = request.getContentType();
-        if (contentType == null || !contentType.startsWith("multipart/form-data")) {
-            LOGGER.debug("Request does not have multipart/form-data content type");
-            throw new ValidationException(HttpServletResponse.SC_BAD_REQUEST, "Request is not multipart/form-data");
+        if (contentType == null || !contentType.startsWith(ACCEPTED_REQUEST_CONTENT_TYPE)) {
+            throw new ValidationException(HttpServletResponse.SC_BAD_REQUEST, "Request is not of proper content type");
         }
+    }
 
-        Part image = request.getPart("image");
+    private void validateImagePart(HttpServletRequest request) throws ValidationException, IOException, ServletException {
+        Part image = request.getPart(MULTIPART_FILE_NAME);
         if (image == null || image.getSize() == 0) {
-            LOGGER.debug("Image part was null or empty");
             throw new ValidationException(HttpServletResponse.SC_BAD_REQUEST, "Image is null or empty");
         }
 
         String fileName = image.getSubmittedFileName();
-        if (!fileName.endsWith(".png") && !fileName.endsWith(".jpeg") && !fileName.endsWith(".jpg")) {
-            LOGGER.debug("Image did not have proper extension");
+        if (fileName == null || !isValidImageExtension(fileName)) {
             throw new ValidationException(HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE, "Image is not an image with proper extension");
         }
 
         String contentTypeOfImage = image.getContentType();
-        if (!contentTypeOfImage.equals("image/png") && !contentTypeOfImage.equals("image/jpeg")) {
-            LOGGER.debug("Image was not of proper content type");
+        if (contentTypeOfImage == null || !ACCEPTED_CONTENT_TYPES.contains(contentTypeOfImage)) {
             throw new ValidationException(HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE, "Image is not an image with proper content type");
         }
-
     }
 
-    private static class ValidationException extends RuntimeException {
+    private boolean isValidImageExtension(String fileName) {
+        return Arrays.stream(ACCEPTED_EXTENSIONS.split(",")).anyMatch(fileName::endsWith);
+    }
+
+    private static class ValidationException extends Exception {
 
         private final int statusCode;
 
@@ -78,5 +86,4 @@ public class FileValidationFilter extends OncePerRequestFilter {
             return statusCode;
         }
     }
-
 }
