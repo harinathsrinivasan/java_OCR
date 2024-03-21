@@ -1,7 +1,6 @@
 package kapia.dev.filters;
 
 import jakarta.servlet.*;
-import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import kapia.dev.util.HashingService;
 import kapia.dev.util.IpResolverService;
@@ -13,13 +12,12 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 @Component
-@WebFilter(urlPatterns = "/getOCR")
 public class RequestDetailsLoggingFilter implements Filter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RequestDetailsLoggingFilter.class);
 
-    private IpResolverService ipResolverService;
-    private HashingService hashingService;
+    private final IpResolverService ipResolverService;
+    private final HashingService hashingService;
 
     @Autowired
     public RequestDetailsLoggingFilter(IpResolverService ipResolverService, HashingService hashingService) {
@@ -38,10 +36,7 @@ public class RequestDetailsLoggingFilter implements Filter {
 
         String ipAddress = hashingService.hash(ipResolverService.extractIpFromRequestIfValid(httpRequest));
 
-        LOGGER.info(String.format("Request details: contentType=%s, contentLength=%d, clientIpAddress=%s",
-                httpRequest.getContentType(),
-                httpRequest.getContentLength(),
-                ipAddress));
+        LOGGER.info("Request details: contentLength=" + httpRequest.getContentLength() + ", uri=" + httpRequest.getRequestURI() + ", method=" + httpRequest.getMethod() + ", ipAddress=" + ipAddress);
 
         chain.doFilter(request, response);
     }

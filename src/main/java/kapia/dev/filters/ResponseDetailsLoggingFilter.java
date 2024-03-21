@@ -30,9 +30,7 @@ public class ResponseDetailsLoggingFilter implements Filter {
             length = httpResponse.getHeader("Content-Length");
         }
 
-        LOGGER.info(String.format("Response details: contentType=%s, contentLength=%s",
-                httpResponse.getContentType(),
-                length));
+        LOGGER.info("Response details: contentLength=" + length + ", statusCode=" + httpResponse.getStatus());
 
     }
 

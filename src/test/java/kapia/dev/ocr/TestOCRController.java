@@ -22,8 +22,6 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 public class TestOCRController {
 
-    final static String ACCEPTED_CONTENT_TYPES = "image/png,image/jpeg";
-
     @InjectMocks
     private OCRController ocrController;
 

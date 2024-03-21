@@ -78,7 +78,6 @@ public class SecurityConfig {
         auth.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder());
         auth.authenticationProvider(authenticationProvider());
         AuthenticationManager authenticationManager = auth.build();
-
         JdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager(dataSource);
         jdbcUserDetailsManager.setAuthenticationManager(authenticationManager);
         return jdbcUserDetailsManager;
