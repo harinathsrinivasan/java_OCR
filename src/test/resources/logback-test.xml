@@ -1,6 +1,6 @@
 <configuration>
     <property name="LOGS" value="./logs"/>
-    <conversionRule conversionWord="threadId" converterClass="kapia.dev.logging.ThreadIdConverter"/>
+    <conversionRule conversionWord="threadId" converterClass="com.kapia.logging.ThreadIdConverter"/>
     <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <Pattern>
