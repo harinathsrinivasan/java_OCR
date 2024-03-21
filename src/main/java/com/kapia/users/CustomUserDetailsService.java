@@ -26,7 +26,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     public void createSuperUser(String username, String password) {
-        if (!applicationUserRepository.findByUsername(username).isPresent()) {
+        if (applicationUserRepository.findByUsername(username).isEmpty()) {
 
             PasswordEncoder encoder = new BCryptPasswordEncoder();
 

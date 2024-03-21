@@ -70,16 +70,11 @@ public class TestIntegration {
         MockPart part = new MockPart("image", file.getName(), Files.readAllBytes(file.toPath()));
         part.getHeaders().setContentType(MediaType.IMAGE_PNG);
 
-        String expectedResponse = CORRECT_RESPONSE;
-
         MvcResult mvcResult = mockMvc.perform(multipart(OCR_ENDPOINT).file(multipartFile).part(part).contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        System.out.println(mvcResult.getResponse().getErrorMessage());
-        System.out.println(mvcResult.getResponse().getStatus());
-
-        assertEquals(expectedResponse, mvcResult.getResponse().getContentAsString());
+        assertEquals(CORRECT_RESPONSE, mvcResult.getResponse().getContentAsString());
     }
 
     @Test
@@ -90,13 +85,11 @@ public class TestIntegration {
         MockPart part = new MockPart("image", file.getName(), Files.readAllBytes(file.toPath()));
         part.getHeaders().setContentType(MediaType.IMAGE_JPEG);
 
-        String expectedResponse = CORRECT_RESPONSE;
-
         MvcResult mvcResult = mockMvc.perform(multipart(OCR_ENDPOINT).file(multipartFile).part(part).contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        assertEquals(expectedResponse, mvcResult.getResponse().getContentAsString());
+        assertEquals(CORRECT_RESPONSE, mvcResult.getResponse().getContentAsString());
 
     }
 
@@ -107,13 +100,11 @@ public class TestIntegration {
         MockPart part = new MockPart("image", file.getName(), Files.readAllBytes(file.toPath()));
         part.getHeaders().setContentType(MediaType.IMAGE_JPEG);
 
-        String expectedResponse = CORRECT_RESPONSE;
-
         MvcResult mvcResult = mockMvc.perform(multipart(OCR_ENDPOINT).file(multipartFile).part(part).contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        assertEquals(expectedResponse, mvcResult.getResponse().getContentAsString());
+        assertEquals(CORRECT_RESPONSE, mvcResult.getResponse().getContentAsString());
     }
 
     @Test
