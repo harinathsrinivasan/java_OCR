@@ -81,28 +81,29 @@ http://localhost:8080/swagger-ui.html
 ## Configuration
 The application can be configured using the `application.properties` file. The following properties can be set:
 
-| Name                                                         | Default Value | Description                                                                                         |
-|--------------------------------------------------------------|---------------|-----------------------------------------------------------------------------------------------------|
-| spring.servlet.multipart.max-file-size                       | 5MB           | Specifies the maximum size permitted for uploaded files. The default is 1MB.                        |
-| spring.servlet.multipart.max-request-size                    | 5MB           | Specifies the maximum size allowed for multipart/form-data requests. The default is 10MB.             |
-| logging.level.aop.com.kapia.ServicePerformanceMonitorInterceptor | TRACE      | Sets the level of logging for ServicePerformanceMonitorInterceptor to TRACE level.                  |
-| ServicePerformanceMonitorInterceptor.override-logging-level  | INFO          | Manually overrides the logging level for ServicePerformanceMonitorInterceptor to INFO level.         |
-| management.endpoints.web.exposure.include                    | *             | Exposes all endpoints for Spring Actuator.                                                          |
-| su.username                                                  | superuser     | Specifies the username for the superuser.                                                           |
-| su.password                                                  | superuser     | Specifies the password for the superuser.                                                           |
-| spring.jpa.open-in-view                                      | false         | Disables open in view for JPA                                                      |
-| spring.datasource.url                                        | jdbc:h2:mem:test | Specifies the URL for the data source using the H2 in-memory database for testing.                  |
-| spring.datasource.driver-class-name                           | org.h2.Driver | Specifies the driver class name for the H2 database.                                                |
-| tessdata.path                                                | tessdata      | Specifies the path for Tessdata.                                                                    |
-| pricing.plans.free.limit.capacity                             | 10            | Specifies the capacity limit for the FREE pricing plan.                                              |
-| pricing.plans.free.limit.tokens                               | 10            | Specifies the tokens limit for the FREE pricing plan.                                                |
-| pricing.plans.free.refill.rate                                | 10            | Specifies the refill rate for the FREE pricing plan.                                                 |
-| pricing.plans.basic.limit.capacity                            | 20            | Specifies the capacity limit for the BASIC pricing plan.                                             |
-| pricing.plans.basic.limit.tokens                              | 20            | Specifies the tokens limit for the BASIC pricing plan.                                               |
-| pricing.plans.basic.refill.rate                               | 20            | Specifies the refill rate for the BASIC pricing plan.                                                |
-| pricing.plans.pro.limit.capacity                              | 30            | Specifies the capacity limit for the PRO pricing plan.                                               |
-| pricing.plans.pro.limit.tokens                                | 30            | Specifies the tokens limit for the PRO pricing plan.                                                 |
-| pricing.plans.pro.refill.rate                                 | 30            | Specifies the refill rate for the PRO pricing plan.                                                  |
+| Name                                                         | Default Value | Description                                                                                  |
+|--------------------------------------------------------------|---------------|----------------------------------------------------------------------------------------------|
+| spring.servlet.multipart.max-file-size                        | 5MB           | Specifies the maximum size permitted for uploaded files. The default is 1MB.                 |
+| spring.servlet.multipart.max-request-size                     | 5MB           | Specifies the maximum size allowed for multipart/form-data requests. The default is 10MB.    |
+| logging.level.aop.com.kapia.ServicePerformanceMonitorInterceptor | TRACE      | Sets the level of logging for ServicePerformanceMonitorInterceptor to TRACE level.           |
+| ServicePerformanceMonitorInterceptor.override-logging-level   | INFO          | Manually overrides the logging level for ServicePerformanceMonitorInterceptor to INFO level. |
+| management.endpoints.web.exposure.include                     | *             | Exposes all endpoints for Spring Actuator.                                                   |
+| su.username                                                   | superuser     | Specifies the username for the superuser.                                                    |
+| su.password                                                   | superuser     | Specifies the password for the superuser.                                                    |
+| spring.jpa.open-in-view                                       | false         | Disables open in view for JPA                                                                |
+| spring.datasource.url                                         | jdbc:h2:mem:test | Specifies the URL for the data source using the H2 in-memory database for testing.           |
+| spring.datasource.driver-class-name                           | org.h2.Driver | Specifies the driver class name for the H2 database.                                         |
+| tessdata.path                                                 | tessdata      | Specifies the path for Tessdata.                                                             |
+| admin.accounts.limit                                          | 10            | Specifies the limit of how many admin accounts can be created.                               |
+| pricing.plans.free.limit.capacity                             | 10            | Specifies the capacity limit for the FREE pricing plan.                                      |
+| pricing.plans.free.limit.tokens                               | 10            | Specifies the tokens limit for the FREE pricing plan.                                        |
+| pricing.plans.free.refill.rate                                | 10            | Specifies the refill rate for the FREE pricing plan.                                         |
+| pricing.plans.basic.limit.capacity                            | 20            | Specifies the capacity limit for the BASIC pricing plan.                                     |
+| pricing.plans.basic.limit.tokens                              | 20            | Specifies the tokens limit for the BASIC pricing plan.                                       |
+| pricing.plans.basic.refill.rate                               | 20            | Specifies the refill rate for the BASIC pricing plan.                                        |
+| pricing.plans.pro.limit.capacity                              | 30            | Specifies the capacity limit for the PRO pricing plan.                                       |
+| pricing.plans.pro.limit.tokens                                | 30            | Specifies the tokens limit for the PRO pricing plan.                                         |
+| pricing.plans.pro.refill.rate                                 | 30            | Specifies the refill rate for the PRO pricing plan.                                          |
 
 Equivalent properties can be found in the application-test.properties.
 

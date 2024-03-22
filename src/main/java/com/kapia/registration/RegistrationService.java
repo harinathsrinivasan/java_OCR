@@ -3,11 +3,15 @@ package com.kapia.registration;
 import com.kapia.users.ApplicationUser;
 import com.kapia.users.ApplicationUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class RegistrationService {
+
+    @Value("${admin.accounts.limit:10}")
+    private int limitOfUsers;
 
     private final ApplicationUserRepository applicationUserRepository;
     private final PasswordEncoder passwordEncoder;
@@ -42,7 +46,7 @@ public class RegistrationService {
     }
 
     private boolean checkLimitOfUsers() {
-        return applicationUserRepository.count() < 10;
+        return applicationUserRepository.count() < limitOfUsers;
     }
 
     private boolean checkIfUserExists(String username) {

@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.kapia</groupId>
     <artifactId>ocr</artifactId>
-    <version>0.1.0</version>
+    <version>0.2.0-SNAPSHOT</version>
     <name>com.kapia</name>
     <properties>
         <java.version>21</java.version>
@@ -83,9 +83,8 @@
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>runtime</scope>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
         </dependency>
         <dependency>
             <groupId>org.hibernate.validator</groupId>
