@@ -25,7 +25,9 @@ Interactive API documentation through Swagger UI for easy exploration and testin
 Tess4J is a Java JNA (Java Native Access) wrapper for the Tesseract OCR API. Tesseract is an open-source text recognition (OCR) Engine available under the Apache 2.0 license. It performs the actual OCR reading.
 
 ### Rate Limiting
-Rate limiting is implemented based on API keys. If a request does not include one, the limit is applied based on the IP it originated from. This method is not perfect since the application does not truly verify the key, and the IP cannot be trusted unless it comes from a trusted proxy.
+Rate limiting is implemented based on API keys. If a request does not include one, the limit is applied based on the IP
+it originated from. This method is not perfect since the application does not truly verify the entry, and the IP cannot
+be trusted unless it comes from a trusted proxy.
 
 This feature was implemented using the bucket4j library. Buckets are cached in memory.
 
@@ -81,42 +83,41 @@ http://localhost:8080/swagger-ui.html
 ## Configuration
 The application can be configured using the `application.properties` file. The following properties can be set:
 
-| Name                                                         | Default Value | Description                                                                                  |
-|--------------------------------------------------------------|---------------|----------------------------------------------------------------------------------------------|
-| spring.servlet.multipart.max-file-size                        | 5MB           | Specifies the maximum size permitted for uploaded files. The default is 1MB.                 |
-| spring.servlet.multipart.max-request-size                     | 5MB           | Specifies the maximum size allowed for multipart/form-data requests. The default is 10MB.    |
-| logging.level.aop.com.kapia.ServicePerformanceMonitorInterceptor | TRACE      | Sets the level of logging for ServicePerformanceMonitorInterceptor to TRACE level.           |
-| ServicePerformanceMonitorInterceptor.override-logging-level   | INFO          | Manually overrides the logging level for ServicePerformanceMonitorInterceptor to INFO level. |
-| management.endpoints.web.exposure.include                     | *             | Exposes all endpoints for Spring Actuator.                                                   |
-| su.username                                                   | superuser     | Specifies the username for the superuser.                                                    |
-| su.password                                                   | superuser     | Specifies the password for the superuser.                                                    |
-| spring.jpa.open-in-view                                       | false         | Disables open in view for JPA                                                                |
-| spring.datasource.url                                         | jdbc:h2:mem:test | Specifies the URL for the data source using the H2 in-memory database for testing.           |
-| spring.datasource.driver-class-name                           | org.h2.Driver | Specifies the driver class name for the H2 database.                                         |
-| tessdata.path                                                 | tessdata      | Specifies the path for Tessdata.                                                             |
-| admin.accounts.limit                                          | 10            | Specifies the limit of how many admin accounts can be created.                               |
-| pricing.plans.free.limit.capacity                             | 10            | Specifies the capacity limit for the FREE pricing plan.                                      |
-| pricing.plans.free.limit.tokens                               | 10            | Specifies the tokens limit for the FREE pricing plan.                                        |
-| pricing.plans.free.refill.rate                                | 10            | Specifies the refill rate for the FREE pricing plan.                                         |
-| pricing.plans.basic.limit.capacity                            | 20            | Specifies the capacity limit for the BASIC pricing plan.                                     |
-| pricing.plans.basic.limit.tokens                              | 20            | Specifies the tokens limit for the BASIC pricing plan.                                       |
-| pricing.plans.basic.refill.rate                               | 20            | Specifies the refill rate for the BASIC pricing plan.                                        |
-| pricing.plans.pro.limit.capacity                              | 30            | Specifies the capacity limit for the PRO pricing plan.                                       |
-| pricing.plans.pro.limit.tokens                                | 30            | Specifies the tokens limit for the PRO pricing plan.                                         |
-| pricing.plans.pro.refill.rate                                 | 30            | Specifies the refill rate for the PRO pricing plan.                                          |
+| Name                                                        | Default Value    | Description                                                                                  |
+|-------------------------------------------------------------|------------------|----------------------------------------------------------------------------------------------|
+| spring.servlet.multipart.max-file-size                       | 5MB              | Specifies the maximum size permitted for uploaded files. The default is 1MB.                 |
+| spring.servlet.multipart.max-request-size                    | 5MB              | Specifies the maximum size allowed for multipart/form-data requests. The default is 10MB.    |
+| logging.level.aop.com.kapia.ServicePerformanceMonitorInterceptor | TRACE            | Sets the level of logging for ServicePerformanceMonitorInterceptor to TRACE level.           |
+| ServicePerformanceMonitorInterceptor.override-logging-level  | INFO             | Manually overrides the logging level for ServicePerformanceMonitorInterceptor to INFO level. |
+| management.endpoints.web.exposure.include                    | *                | Exposes all endpoints for Spring Actuator.                                                   |
+| su.username                                                  | superuser        | Specifies the username for the superuser.                                                    |
+| su.password                                                  | superuser        | Specifies the password for the superuser.                                                    |
+| tessdata.path                                                | tessdata         | Specifies the path for Tessdata.                                                             |
+| admin.accounts.limit                                         | 10               | Specifies the limit of how many admin accounts can be created.                               |
+| pricing.plans.free.limit.capacity                            | 10               | Specifies the capacity limit for the FREE pricing plan.                                      |
+| pricing.plans.free.limit.tokens                              | 10               | Specifies the tokens limit for the FREE pricing plan.                                        |
+| pricing.plans.basic.limit.capacity                           | 20               | Specifies the capacity limit for the BASIC pricing plan.                                     |
+| pricing.plans.basic.limit.tokens                             | 20               | Specifies the tokens limit for the BASIC pricing plan.                                       |
+| pricing.plans.pro.limit.capacity                             | 30               | Specifies the capacity limit for the PRO pricing plan.                                       |
+| pricing.plans.pro.limit.tokens                               | 30               | Specifies the tokens limit for the PRO pricing plan.                                         |
+| pricing.plans.refill.rate.in.minutes                         | 1                | Specifies the rate at which tokens are refilled in minutes.                                  |
+| maximum.time.for.refilling.tokens.in.minutes                 | 1                | Specifies maximum duration of 1 minute expiration for the ProxyManager                       |
+| spring.redis.host                                            | localhost        | Specifies the host for the Redis server.                                                     |
+| spring.redis.port                                            | 6379             | Specifies the port for the Redis server.                                                     |
 
 Equivalent properties can be found in the application-test.properties.
 
 ## Future improvements
-The application is a working prototype that is standalone and not suitable for real-world use (due to security and implementation of H2 database or in-memory cache). As of the current version, the following improvements could be made:
 
-- Track user accounts in a separate database that will be the only source of truth for the application (since the database is in-memory, each instance of the application will have a different set of users).
-- Use a separate cache service, like Redis, to store the buckets (again, the in-memory cache is not suitable for a real-world application).
+The application is a working prototype that is standalone and not suitable for real-world use. As of the current
+version, the following improvements could be made:
+
 - Resolve the pricing plan in a separate service allowing better flexibility.
 - Process logs outside the application, using a separate service or tool.
 - Offer OCR reading in multiple languages.
 
 <!-- STACK -->
+
 ## Built With
 
 [![bucket4j][bucket4j]][bucket4j-url]
