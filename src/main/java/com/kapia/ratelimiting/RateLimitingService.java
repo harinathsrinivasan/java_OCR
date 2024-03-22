@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,8 @@ import java.util.function.Supplier;
 public class RateLimitingService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RateLimitingService.class);
+
+    @Qualifier("lettuceProxyManager")
     private final ProxyManager<String> proxyManager;
     private final Environment environment;
 
