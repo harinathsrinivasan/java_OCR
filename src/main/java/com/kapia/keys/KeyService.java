@@ -41,7 +41,7 @@ public class KeyService {
         String key = pricingPlan.name() + "-" + hashingService.hash(salt);
         String hashedKey = hashingService.hashKey(key);
         if (duplicateKeyCheck(hashedKey)) {
-            return generateKey(pricingPlan);
+            hashedKey = generateKey(pricingPlan);
         }
         addKey(hashedKey);
         return key;
@@ -56,16 +56,3 @@ public class KeyService {
     }
 
 }
-
-
-/*
-[PRac4e443457f69e38c99d29376279949ccdb61f5fd6c6cbaa8414af9567095e5f,
-PR-201c07974ce88d473eaa320a2ee73d4f3b4f13e607ef629fa4eccb1728ee627cf6, key1,
-PRc0b1e202956a8c609c6eb5d8d27ad3b711ebcae2c5e4f6679f7ea90f95e3d8ac, PR04a09fc68f6ebfbf79e9c0ff54c5574bdb3a47d04bfb1c924d2b7383ca7a3409,
-PR30e4d6dab0a6674fbd372847075b75b725b5a307b3e9258697da9609eec94faf, PX48773f292a246e300b7b7736c07978122dd8bdc7b38990fbace846e3fd385611,
-BAb648dc397c44603312bbaee6630dcb0c12d42fe3d46eed5e63dbe94d370fa261, BA3a531c48658a6ab71e01667c22d7cca43ce3e405001ad5bc59769a0790b31a6d,
-BA6ddb51ccdb92c8e588573ed5d30e188cb2366b2157a1bed5c33e5f5205aaa4af, PX29899e03251dbcbb1afe1928020db98a78eed7330a348020f32a6f4cf4be9360]
-
-
-
- */
