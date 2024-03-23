@@ -42,7 +42,8 @@ public class SecurityConfig {
     };
 
     private static final String[] ADMIN_WHITELIST = {
-            "/actuator/**"
+            "/actuator/**",
+            "/key"
     };
 
     @Value("${su.username}")

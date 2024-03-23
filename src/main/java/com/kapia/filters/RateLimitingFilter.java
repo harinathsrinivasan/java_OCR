@@ -1,5 +1,6 @@
 package com.kapia.filters;
 
+import com.kapia.keys.KeyService;
 import com.kapia.ratelimiting.RateLimitingService;
 import com.kapia.util.HashingService;
 import com.kapia.util.IpResolverService;
@@ -23,6 +24,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
     private final RateLimitingService rateLimitingService;
     private final IpResolverService ipResolverService;
     private final HashingService hashingService;
+    private final KeyService keyService;
     private static final Logger LOGGER = LoggerFactory.getLogger(RateLimitingFilter.class);
 
     @Value("${admin.role.name:ROLE_ADMIN}")
@@ -32,10 +34,11 @@ public class RateLimitingFilter extends OncePerRequestFilter {
     private String ROLE_SUPERUSER;
 
     @Autowired
-    public RateLimitingFilter(RateLimitingService rateLimitingService, IpResolverService ipResolverService, HashingService hashingService) {
+    public RateLimitingFilter(RateLimitingService rateLimitingService, IpResolverService ipResolverService, HashingService hashingService, KeyService keyService) {
         this.rateLimitingService = rateLimitingService;
         this.ipResolverService = ipResolverService;
         this.hashingService = hashingService;
+        this.keyService = keyService;
     }
 
     @Override
@@ -50,7 +53,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
             chain.doFilter(request, response);
             return;
         }
-        if (hasApiKey(request)) {
+        if (hasValidKey(request)) {
             String key = hashingService.hashKey(extractApiKey(request));
             LOGGER.info("Trying to resolve limit for API key: " + key);
             if (!canConsumeTokenWithKey(response, key)) {
@@ -79,9 +82,19 @@ public class RateLimitingFilter extends OncePerRequestFilter {
         return request.isUserInRole(ROLE_ADMIN) || request.isUserInRole(ROLE_SUPERUSER);
     }
 
-    private boolean hasApiKey(HttpServletRequest request) {
+    private boolean hasValidKey(HttpServletRequest request) {
         String apiKey = extractApiKey(request);
-        return apiKey != null && !apiKey.isEmpty();
+        if (apiKey != null && !apiKey.isEmpty()) {
+            LOGGER.info("Checking if API key is valid");
+            String hashedKey = hashingService.hashKey(apiKey);
+            boolean isValid = keyService.isKeyValid(hashedKey);
+            if (isValid) {
+                LOGGER.info("API key is valid: " + hashedKey);
+                return true;
+            }
+            LOGGER.info("API key is not valid: " + hashedKey);
+        }
+        return false;
     }
 
     private String extractApiKey(HttpServletRequest request) {

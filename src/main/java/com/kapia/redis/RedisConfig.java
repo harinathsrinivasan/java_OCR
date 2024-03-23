@@ -24,6 +24,12 @@ public class RedisConfig {
     @Value("${redis.port:6379}")
     private int redisPort;
 
+    @Value("${redis.key.host:localhost}")
+    private String redisKeyHost;
+
+    @Value("${redis.key.port:6380}")
+    private int redisKeyPort;
+
 
     private RedisClient redisClient() {
         return RedisClient.create(RedisURI.builder()
@@ -43,5 +49,14 @@ public class RedisConfig {
                         ExpirationAfterWriteStrategy.basedOnTimeForRefillingBucketUpToMax(Duration.ofMinutes(1L)))
                 .build();
     }
+
+    @Bean
+    public RedisClient redisKeyClient() {
+        return RedisClient.create(RedisURI.builder()
+                .withHost(redisKeyHost)
+                .withPort(redisKeyPort)
+                .build());
+    }
+
 
 }

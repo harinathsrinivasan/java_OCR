@@ -41,10 +41,10 @@ public enum PricingPlan {
         if (apiKey == null || apiKey.isEmpty()) {
             return FREE;
         }
-        if (apiKey.startsWith("PX")) {
+        if (apiKey.startsWith("BA")) {
             return BASIC;
         }
-        if (apiKey.startsWith("AX")) {
+        if (apiKey.startsWith("PR")) {
             return PRO;
         }
         return FREE;
