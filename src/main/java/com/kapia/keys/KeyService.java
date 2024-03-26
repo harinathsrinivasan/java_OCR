@@ -2,10 +2,9 @@ package com.kapia.keys;
 
 import com.kapia.ratelimiting.PricingPlan;
 import com.kapia.util.HashingService;
-import io.lettuce.core.RedisClient;
+import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -13,15 +12,17 @@ import java.time.LocalDateTime;
 @Service
 public class KeyService {
 
+    private final static org.slf4j.Logger LOGGER = org.slf4j.LoggerFactory.getLogger(KeyService.class);
+
     private final RedisCommands<String, String> redisCommands;
 
-    private final RedisClient redisKeyClient;
+    private final StatefulRedisConnection<String, String> connection;
     private final HashingService hashingService;
 
     @Autowired
-    public KeyService(@Qualifier("redisKeyClient") RedisClient redisKeyClient, HashingService hashingService) {
-        this.redisKeyClient = redisKeyClient;
-        this.redisCommands = redisKeyClient.connect().sync();
+    public KeyService(HashingService hashingService, StatefulRedisConnection<String, String> connection) {
+        this.connection = connection;
+        this.redisCommands = connection.sync();
         this.hashingService = new HashingService();
     }
 
