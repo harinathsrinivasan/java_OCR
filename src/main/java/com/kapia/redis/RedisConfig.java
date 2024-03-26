@@ -9,29 +9,36 @@ import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.codec.ByteArrayCodec;
 import io.lettuce.core.codec.RedisCodec;
 import io.lettuce.core.codec.StringCodec;
+import jakarta.annotation.PreDestroy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.time.Duration;
 
 @Configuration
+@EnableCaching
 public class RedisConfig {
 
-    @Value("${redis.host:localhost}")
+    private static final Logger LOGGER = LoggerFactory.getLogger(RedisConfig.class);
+    @Value("${REDIS_HOST:localhost}")
     private String redisHost;
 
-    @Value("${redis.port:6379}")
+    @Value("${REDIS_PORT:6379}")
     private int redisPort;
 
-    @Value("${redis.key.host:localhost}")
+    @Value("${REDIS_KEY_HOST:localhost}")
     private String redisKeyHost;
 
-    @Value("${redis.key.port:6380}")
+    @Value("${REDIS_KEY_PORT:6380}")
     private int redisKeyPort;
 
-
     private RedisClient redisClient() {
+        LOGGER.info("Trying to connect to redis at {}:{}", redisHost, redisPort);
+
         return RedisClient.create(RedisURI.builder()
                 .withHost(redisHost)
                 .withPort(redisPort)
@@ -50,13 +57,28 @@ public class RedisConfig {
                 .build();
     }
 
-    @Bean
+    @PreDestroy
+    public void closeRedisClient() {
+        LOGGER.info("Closing redis client");
+        redisClient().shutdown();
+    }
+
     public RedisClient redisKeyClient() {
+        LOGGER.info("Trying to connect to redis-keystore at {}:{}", redisKeyHost, redisKeyPort);
+
         return RedisClient.create(RedisURI.builder()
                 .withHost(redisKeyHost)
                 .withPort(redisKeyPort)
                 .build());
     }
 
+    @Bean
+    public StatefulRedisConnection<String, String> redisKeyConnection() {
+        RedisClient redisKeyClient = redisKeyClient();
+        StatefulRedisConnection<String, String> redisConnection = redisKeyClient.connect();
+
+        return redisConnection;
+
+    }
 
 }
