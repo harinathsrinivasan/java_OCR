@@ -1,18 +1,24 @@
 package com.kapia.ocr;
 
+//import com.github.fppt.jedismock.RedisServer;
+//import com.kapia.conf.TestRedisConfig;
+
 import com.kapia.filters.FileValidationFilter;
+import com.kapia.filters.RequestDetailsLoggingFilter;
+import com.kapia.filters.ResponseDetailsLoggingFilter;
+import com.kapia.util.HashingService;
+import com.kapia.util.IpResolverService;
 import jakarta.servlet.ServletContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockPart;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -25,9 +31,17 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @TestPropertySource(locations = "classpath:application-test.properties")
+@ContextConfiguration(classes = {
+        FileValidationFilter.class,
+        RequestDetailsLoggingFilter.class,
+        ResponseDetailsLoggingFilter.class,
+        OCRController.class,
+        OCRService.class,
+        HashingService.class,
+        IpResolverService.class
+})
 public class TestIntegration {
 
     final static String OCR_ENDPOINT = "/getOCR";
