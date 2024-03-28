@@ -2,12 +2,15 @@ package com.kapia.ocr;
 
 import net.sourceforge.tess4j.TesseractException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,7 +22,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
+@ContextConfiguration(classes = {OCRController.class, OCRService.class})
+@ExtendWith(SpringExtension.class)
+@ActiveProfiles("test")
 public class TestOCRController {
 
     @InjectMocks
