@@ -1,13 +1,7 @@
 package com.kapia.ocr;
 
-//import com.github.fppt.jedismock.RedisServer;
-//import com.kapia.conf.TestRedisConfig;
-
 import com.kapia.filters.FileValidationFilter;
-import com.kapia.filters.RequestDetailsLoggingFilter;
-import com.kapia.filters.ResponseDetailsLoggingFilter;
-import com.kapia.util.HashingService;
-import com.kapia.util.IpResolverService;
+import com.redis.testcontainers.RedisContainer;
 import jakarta.servlet.ServletContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,12 +11,16 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockPart;
 import org.springframework.mock.web.MockServletContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.testcontainers.containers.MariaDBContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -32,17 +30,38 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-@TestPropertySource(locations = "classpath:application-test.properties")
-@ContextConfiguration(classes = {
-        FileValidationFilter.class,
-        RequestDetailsLoggingFilter.class,
-        ResponseDetailsLoggingFilter.class,
-        OCRController.class,
-        OCRService.class,
-        HashingService.class,
-        IpResolverService.class
-})
+@Testcontainers(disabledWithoutDocker = true)
 public class TestIntegration {
+
+    @Container
+    private static final RedisContainer REDIS_BUCKET_CONTAINER = new RedisContainer(DockerImageName.parse("redis:latest")).withExposedPorts(6379).withCommand("redis-server", "--loglevel", "debug");
+
+    @DynamicPropertySource
+    private static void registerRedisProperties(DynamicPropertyRegistry registry) {
+        registry.add("redis.bucket.host", REDIS_BUCKET_CONTAINER::getHost);
+        registry.add("redis.bucket.port", () -> REDIS_BUCKET_CONTAINER.getMappedPort(6379)
+                .toString());
+    }
+
+    @Container
+    private static final RedisContainer REDIS_KEY_CONTAINER = new RedisContainer(DockerImageName.parse("redis:latest")).withExposedPorts(6379).withCommand("redis-server", "--loglevel", "debug");
+
+    @DynamicPropertySource
+    private static void registerRedisKeyProperties(DynamicPropertyRegistry registry) {
+        registry.add("redis.key.host", REDIS_KEY_CONTAINER::getHost);
+        registry.add("redis.key.port", () -> REDIS_KEY_CONTAINER.getMappedPort(6379)
+                .toString());
+    }
+
+    @Container
+    private static final MariaDBContainer MARIADB_CONTAINER = new MariaDBContainer(DockerImageName.parse("mariadb:latest")).withDatabaseName("users_credentials").withUsername("ocr").withPassword("password");
+
+    @DynamicPropertySource
+    private static void registerMariaDBProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", MARIADB_CONTAINER::getJdbcUrl);
+        registry.add("spring.datasource.username", MARIADB_CONTAINER::getUsername);
+        registry.add("spring.datasource.password", MARIADB_CONTAINER::getPassword);
+    }
 
     final static String OCR_ENDPOINT = "/getOCR";
     final static String CORRECT_RESPONSE = """
