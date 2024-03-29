@@ -32,20 +32,27 @@ public class RedisConfig {
     @Value("${REDIS_PORT:6379}")
     private int redisPort;
 
+    @Value("${REDIS_PASSWORD:none}")
+    private char[] redisPassword;
+
     @Value("${REDIS_KEY_HOST:localhost}")
     private String redisKeyHost;
 
     @Value("${REDIS_KEY_PORT:6380}")
     private int redisKeyPort;
 
+    @Value("${REDIS_KEY_PASSWORD:none}")
+    private char[] redisKeyPassword;
+
     @Bean(destroyMethod = "shutdown")
     @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    public RedisClient redisClient(String redisHost, int redisPort) {
+    public RedisClient redisClient(String redisHost, int redisPort, char[] redisPassword) {
         LOGGER.info("Creating a Redis client for host: {} and port: {}", redisHost, redisPort);
 
         return RedisClient.create(RedisURI.builder()
                 .withHost(redisHost)
                 .withPort(redisPort)
+                .withPassword(redisPassword)
                 .build());
     }
 
@@ -53,7 +60,7 @@ public class RedisConfig {
     public StatefulRedisConnection<String, String> redisKeyConnection() {
 
         LOGGER.info("Creating a Redis StatefulRedisConnection for host: {} and port: {}", redisKeyHost, redisKeyPort);
-        RedisClient redisClient = redisClient(redisKeyHost, redisKeyPort);
+        RedisClient redisClient = redisClient(redisKeyHost, redisKeyPort, redisKeyPassword);
 
         return redisClient.connect();
     }
@@ -62,7 +69,7 @@ public class RedisConfig {
     public StatefulRedisConnection<String,  byte[]> lettuceRedisConnection() {
 
         LOGGER.info("Creating a Redis StatefulRedisConnection for host: {} and port: {}", redisHost, redisPort);
-        RedisClient redisClient = redisClient(redisHost, redisPort);
+        RedisClient redisClient = redisClient(redisHost, redisPort, redisPassword);
 
         return redisClient
                 .connect(RedisCodec.of(StringCodec.UTF8, ByteArrayCodec.INSTANCE));
