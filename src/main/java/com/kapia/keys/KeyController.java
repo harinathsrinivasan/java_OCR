@@ -20,7 +20,7 @@ public class KeyController {
 
     @GetMapping
     public String getKey(@RequestParam String plan) {
-        return keyService.generateKey(PricingPlan.valueOf(plan));
+        return keyService.generateKeyAndAddToRedis(PricingPlan.valueOf(plan));
     }
 
 

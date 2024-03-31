@@ -87,7 +87,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
         if (apiKey != null && !apiKey.isEmpty()) {
             LOGGER.info("Checking if API key is valid");
             String hashedKey = hashingService.hashKey(apiKey);
-            boolean isValid = keyService.isKeyValid(hashedKey);
+            boolean isValid = keyService.doesExist(hashedKey);
             if (isValid) {
                 LOGGER.info("API key is valid: " + hashedKey);
                 return true;

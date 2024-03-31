@@ -12,19 +12,17 @@ import io.lettuce.core.codec.StringCodec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
 
 import java.time.Duration;
 
 @Configuration
 @EnableCaching
-public class RedisConfig {
+public class RedisBucketConfig {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RedisConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RedisBucketConfig.class);
 
     @Value("${REDIS_HOST:${redis.bucket.host}}")
     private String redisHost;
@@ -35,41 +33,15 @@ public class RedisConfig {
     @Value("${REDIS_PASSWORD:${redis.bucket.password}}")
     private char[] redisPassword;
 
-    @Value("${REDIS_KEY_HOST:${redis.key.host}}")
-    private String redisKeyHost;
-
-    @Value("${REDIS_KEY_PORT:${redis.key.port}}")
-    private int redisKeyPort;
-
-    @Value("${REDIS_KEY_PASSWORD:${redis.key.password}}")
-    private char[] redisKeyPassword;
-
-    @Bean(destroyMethod = "shutdown")
-    @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    public RedisClient redisClient(String redisHost, int redisPort, char[] redisPassword) {
-        LOGGER.info("Creating a Redis client for host: {} and port: {}", redisHost, redisPort);
-
-        return RedisClient.create(RedisURI.builder()
-                .withHost(redisHost)
-                .withPort(redisPort)
-                .withPassword(redisPassword)
-                .build());
-    }
-
-    @Bean(destroyMethod = "close")
-    public StatefulRedisConnection<String, String> redisKeyConnection() {
-
-        LOGGER.info("Creating a Redis StatefulRedisConnection for host: {} and port: {}", redisKeyHost, redisKeyPort);
-        RedisClient redisClient = redisClient(redisKeyHost, redisKeyPort, redisKeyPassword);
-
-        return redisClient.connect();
-    }
-
     @Bean(destroyMethod = "close")
     public StatefulRedisConnection<String,  byte[]> lettuceRedisConnection() {
 
         LOGGER.info("Creating a Redis StatefulRedisConnection for host: {} and port: {}", redisHost, redisPort);
-        RedisClient redisClient = redisClient(redisHost, redisPort, redisPassword);
+        RedisClient redisClient = RedisClient.create(RedisURI.builder()
+                .withHost(redisHost)
+                .withPort(redisPort)
+                .withPassword(redisPassword)
+                .build());
 
         return redisClient
                 .connect(RedisCodec.of(StringCodec.UTF8, ByteArrayCodec.INSTANCE));
