@@ -1,6 +1,5 @@
-package com.kapia.ocr;
+package com.kapia.keys;
 
-import com.kapia.keys.KeyService;
 import com.kapia.ratelimiting.PricingPlan;
 import com.kapia.redis.RedisKeyConfig;
 import com.kapia.util.HashingService;
@@ -15,6 +14,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @Testcontainers(disabledWithoutDocker = true)
@@ -48,29 +49,29 @@ public class TestKeyService {
     public void givenKeyService_whenGenerateKeyBasic_thenKeyIsGenerated() {
         String key = keyService.generateKeyAndAddToRedis(PricingPlan.BASIC);
 
-        assert(key.length() > 0);
-        assert(key.startsWith(PricingPlan.BASIC.name()));
+        assertThat(key.length()).isGreaterThan(0);
+        assertThat(key).startsWith(PricingPlan.BASIC.name());
     }
 
     @Test
     public void givenKeyService_whenGenerateKeyPro_thenKeyIsGenerated() {
         String key = keyService.generateKeyAndAddToRedis(PricingPlan.PRO);
 
-        assert(key.length() > 0);
-        assert(key.startsWith(PricingPlan.PRO.name()));
+        assertThat(key.length()).isGreaterThan(0);
+        assertThat(key).startsWith(PricingPlan.PRO.name());
     }
 
     @Test
     public void givenValidKey_whenValidateKey_thenKeyIsValid() {
         String key = keyService.generateKeyAndAddToRedis(PricingPlan.BASIC);
-        assert(keyService.doesExist(key));
+        assertThat(keyService.doesExist(key)).isTrue();
     }
 
     @Test
     public void givenInvalidKey_whenValidateKey_thenKeyIsInvalid() {
         String key = keyService.generateKeyAndAddToRedis(PricingPlan.BASIC);
         key = key.substring(1);
-        assert(!keyService.doesExist(key));
+        assertThat(keyService.doesExist(key)).isFalse();
     }
 
 
