@@ -2,6 +2,8 @@ package com.kapia.registration;
 
 import com.kapia.users.ApplicationUser;
 import com.kapia.users.ApplicationUserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -10,8 +12,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class RegistrationService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(RegistrationService.class);
+
     @Value("${admin.accounts.limit:10}")
     private int limitOfUsers;
+
+    @Value("${admin.role.name:ROLE_ADMIN}")
+    private String ROLE_ADMIN;
 
     private final ApplicationUserRepository applicationUserRepository;
     private final PasswordEncoder passwordEncoder;
@@ -24,8 +31,8 @@ public class RegistrationService {
 
     public void register(RegistrationRequest request) {
 
-        if (!validateRole(request.authority())) {
-            throw new IllegalStateException("Role can only be ROLE_ADMIN");
+        if (!isRequestValid(request)) {
+            throw new IllegalStateException("Invalid request");
         }
         if (!checkLimitOfUsers()) {
             throw new IllegalStateException("Limit of users reached");
@@ -34,6 +41,8 @@ public class RegistrationService {
             throw new IllegalStateException("Username is not available");
         }
 
+        LOGGER.debug("Creating user: " + request.username());
+
         var user = new ApplicationUser();
         user.setUsername(request.username());
         user.setPassword(passwordEncoder.encode(request.password()));
@@ -41,15 +50,31 @@ public class RegistrationService {
         applicationUserRepository.save(user);
     }
 
-    private boolean validateRole(String role) {
-        return role.equals("ROLE_ADMIN");
+    private boolean isRequestValid(RegistrationRequest request) {
+
+        if (request.username() == null || request.username().isEmpty()) {
+            LOGGER.debug("Invalid username");
+            return false;
+        }
+        if (request.password() == null || request.password().isEmpty()) {
+            LOGGER.debug("Invalid password");
+            return false;
+        }
+        if (request.authority() == null || !request.authority().equals(ROLE_ADMIN)) {
+            LOGGER.debug("Invalid authority");
+            return false;
+        }
+
+        return true;
     }
 
     private boolean checkLimitOfUsers() {
-        return applicationUserRepository.count() < limitOfUsers;
+        LOGGER.debug("Users count: " + applicationUserRepository.countByAuthority(ROLE_ADMIN) + " Limit: " + limitOfUsers);
+        return applicationUserRepository.countByAuthority(ROLE_ADMIN) < limitOfUsers;
     }
 
     private boolean checkIfUserExists(String username) {
+        LOGGER.debug("Checking if user exists: " + username);
         return applicationUserRepository.findByUsername(username).isPresent();
     }
 

@@ -10,6 +10,6 @@ public interface ApplicationUserRepository extends CrudRepository<ApplicationUse
 
     Optional<ApplicationUser> findByUsername(String username);
 
-    long count();
+    long countByAuthority(String authority);
 
 }
