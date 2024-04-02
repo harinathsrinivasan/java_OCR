@@ -1,4 +1,4 @@
-package com.kapia.ocr;
+package com.kapia.util;
 
 import com.kapia.util.HashingService;
 import org.junit.jupiter.api.Test;

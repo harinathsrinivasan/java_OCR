@@ -1,6 +1,5 @@
-package com.kapia.ocr;
+package com.kapia.util;
 
-import com.kapia.util.IpResolverService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.mock.web.MockHttpServletRequest;
