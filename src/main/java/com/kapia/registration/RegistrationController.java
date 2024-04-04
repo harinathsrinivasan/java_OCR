@@ -15,14 +15,13 @@ public class RegistrationController {
     private final RegistrationService registrationService;
 
     @Autowired
-    public RegistrationController(RegistrationService registrationService) throws IllegalStateException {
+    public RegistrationController(RegistrationService registrationService) {
         this.registrationService = registrationService;
     }
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody RegistrationRequest request) {
-        registrationService.register(request);
-        return ResponseEntity.status(201).body("User registered successfully");
-    }
+        return ResponseEntity.status(201).body("User " + registrationService.register(request) + " created");
+     }
 
 }

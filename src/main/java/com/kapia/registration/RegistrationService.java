@@ -29,7 +29,7 @@ public class RegistrationService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public void register(RegistrationRequest request) {
+    public String register(RegistrationRequest request) {
 
         if (!isRequestValid(request)) {
             throw new IllegalStateException("Invalid request");
@@ -43,11 +43,16 @@ public class RegistrationService {
 
         LOGGER.debug("Creating user: " + request.username());
 
-        var user = new ApplicationUser();
+        ApplicationUser user = new ApplicationUser();
+
         user.setUsername(request.username());
         user.setPassword(passwordEncoder.encode(request.password()));
         user.setAuthority(request.authority());
+
         applicationUserRepository.save(user);
+
+        return user.getUsername();
+
     }
 
     private boolean isRequestValid(RegistrationRequest request) {
