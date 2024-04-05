@@ -14,10 +14,10 @@ public class RegistrationService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RegistrationService.class);
 
-    @Value("${admin.accounts.limit:10}")
-    private int limitOfUsers;
+    @Value("${admin.accounts.limit}")
+    private String limitOfUsers;
 
-    @Value("${admin.role.name:ROLE_ADMIN}")
+    @Value("${admin.authority.name}")
     private String ROLE_ADMIN;
 
     private final ApplicationUserRepository applicationUserRepository;
@@ -75,7 +75,7 @@ public class RegistrationService {
 
     private boolean checkLimitOfUsers() {
         LOGGER.debug("Users count: " + applicationUserRepository.countByAuthority(ROLE_ADMIN) + " Limit: " + limitOfUsers);
-        return applicationUserRepository.countByAuthority(ROLE_ADMIN) < limitOfUsers;
+        return applicationUserRepository.countByAuthority(ROLE_ADMIN) < Integer.parseInt(limitOfUsers);
     }
 
     private boolean checkIfUserExists(String username) {

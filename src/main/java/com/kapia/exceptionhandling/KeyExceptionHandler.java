@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class KeyExceptionHandler extends ResponseExceptionHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KeyExceptionHandler.class);
+
     private static final String INVALID_KEY_MESSAGE = "Invalid key type";
 
     @ExceptionHandler(IllegalArgumentException.class)

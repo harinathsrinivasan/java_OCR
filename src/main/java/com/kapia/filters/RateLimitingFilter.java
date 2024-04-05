@@ -27,10 +27,10 @@ public class RateLimitingFilter extends OncePerRequestFilter {
     private final KeyService keyService;
     private static final Logger LOGGER = LoggerFactory.getLogger(RateLimitingFilter.class);
 
-    @Value("${admin.role.name:ROLE_ADMIN}")
+    @Value("${admin.authority.name}")
     private String ROLE_ADMIN;
 
-    @Value("${superuser.role.name:ROLE_SUPERUSER}")
+    @Value("${superuser.authority.name}")
     private String ROLE_SUPERUSER;
 
     @Autowired

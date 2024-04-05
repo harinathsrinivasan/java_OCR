@@ -17,6 +17,7 @@ import java.util.Arrays;
 public class FileValidationFilter extends OncePerRequestFilter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FileValidationFilter.class);
+
     private static final String ACCEPTED_CONTENT_TYPES = "image/png,image/jpeg";
     private static final String ACCEPTED_EXTENSIONS = ".png,.jpeg,.jpg";
     private static final String ACCEPTED_REQUEST_CONTENT_TYPE = "multipart/form-data";

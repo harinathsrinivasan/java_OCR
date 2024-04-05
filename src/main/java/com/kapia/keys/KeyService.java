@@ -28,6 +28,7 @@ public class KeyService {
     }
 
     private String addKey(String key) {
+        LOGGER.info("Adding new key to Redis");
         String value = LocalDateTime.now().toString();
         redisCommands.set(key, value);
         return key;
@@ -41,6 +42,8 @@ public class KeyService {
         if (doesExist(hashedKey)) {
             return generateRawKey(pricingPlan);
         }
+
+        LOGGER.info("Generated new key for plan: " + pricingPlan.name());
 
         return rawKey;
     }

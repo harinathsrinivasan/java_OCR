@@ -27,6 +27,10 @@ import javax.sql.DataSource;
 @Configuration
 public class SecurityConfig {
 
+    private static final String OCR_ENDPOINT = "/getOCR";
+    private static final String KEY_ENDPOINT = "/key";
+    private static final String REGISTER_ENDPOINT = "/register";
+
     private static final String[] AUTH_WHITELIST = {
             // -- Swagger UI v2
             "/v2/api-docs",
@@ -43,7 +47,7 @@ public class SecurityConfig {
 
     private static final String[] ADMIN_WHITELIST = {
             "/actuator/**",
-            "/key"
+            KEY_ENDPOINT
     };
 
     @Value("${su.username}")
@@ -52,10 +56,10 @@ public class SecurityConfig {
     @Value("${su.password}")
     private String superuserPassword;
 
-    @Value("${admin.role.name:ROLE_ADMIN}")
+    @Value("${admin.authority.name}")
     private String ROLE_ADMIN;
 
-    @Value("${superuser.role.name:ROLE_SUPERUSER}")
+    @Value("${superuser.authority.name}")
     private String ROLE_SUPERUSER;
 
     @Autowired
@@ -91,8 +95,8 @@ public class SecurityConfig {
                 .httpBasic(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, "/getOCR").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/register").hasAnyAuthority(ROLE_ADMIN, ROLE_SUPERUSER)
+                        .requestMatchers(HttpMethod.POST, OCR_ENDPOINT).permitAll()
+                        .requestMatchers(HttpMethod.POST, REGISTER_ENDPOINT).hasAnyAuthority(ROLE_ADMIN, ROLE_SUPERUSER)
                         .requestMatchers(HttpMethod.GET, ADMIN_WHITELIST).hasAnyAuthority(ROLE_ADMIN, ROLE_SUPERUSER)
                         .requestMatchers(HttpMethod.GET, AUTH_WHITELIST).permitAll()
                         .anyRequest().denyAll()

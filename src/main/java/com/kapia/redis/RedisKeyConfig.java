@@ -14,13 +14,13 @@ public class RedisKeyConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RedisBucketConfig.class);
 
-    @Value("${REDIS_KEY_HOST:${redis.key.host}}")
+    @Value("${redis.key.host}")
     private String redisKeyHost;
 
-    @Value("${REDIS_KEY_PORT:${redis.key.port}}")
+    @Value("${redis.key.port}")
     private int redisKeyPort;
 
-    @Value("${REDIS_KEY_PASSWORD:${redis.key.password}}")
+    @Value("${redis.key.password}")
     private char[] redisKeyPassword;
 
     public RedisClient redisKeyClient(String redisKeyHost, int redisKeyPort, char[] redisKeyPassword) {

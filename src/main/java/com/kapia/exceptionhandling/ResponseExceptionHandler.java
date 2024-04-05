@@ -17,6 +17,7 @@ import java.io.IOException;
 public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(ResponseExceptionHandler.class);
+
     private final static String ERROR_PROCESSING_IMAGE = "Error processing the image";
     private final static String ERROR_READING_IMAGE = "Error during image reading";
     private final static String MULTIPART_FILE_CANNOT_BE_NULL = "MultipartFile cannot be null";
