@@ -24,13 +24,13 @@ public class RedisBucketConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RedisBucketConfig.class);
 
-    @Value("${REDIS_HOST:${redis.bucket.host}}")
+    @Value("${REDIS_BUCKET_HOST:${redis.bucket.host}}")
     private String redisHost;
 
-    @Value("${REDIS_PORT:${redis.bucket.port}}")
+    @Value("${REDIS_BUCKET_PORT:${redis.bucket.port}}")
     private int redisPort;
 
-    @Value("${REDIS_PASSWORD:${redis.bucket.password}}")
+    @Value("${REDIS_BUCKET_PASSWORD:${redis.bucket.password}}")
     private char[] redisPassword;
 
     @Bean(destroyMethod = "close")
