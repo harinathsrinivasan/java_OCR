@@ -63,13 +63,13 @@ public class TestKeyService {
     @Test
     public void givenValidKey_whenValidateKey_thenKeyIsValid() {
         String key = keyService.generateKeyAndAddToRedis(PricingPlan.BASIC);
-        Assertions.assertTrue(keyService.doesExist(key));
+        Assertions.assertTrue(keyService.isClientKeyValid(key));
     }
 
     @Test
     public void givenInvalidKey_whenValidateKey_thenKeyIsInvalid() {
         String key = keyService.generateKeyAndAddToRedis(PricingPlan.BASIC) + "invalid";
-        Assertions.assertFalse(keyService.doesExist(key));
+        Assertions.assertFalse(keyService.isClientKeyValid(key));
     }
 
 

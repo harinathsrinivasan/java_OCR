@@ -126,9 +126,9 @@ public class TestKeyIntegration {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        String key = mvcResult.getResponse().getContentAsString();
+        String rawKey = mvcResult.getResponse().getContentAsString();
 
-        Assertions.assertTrue(keyService.doesExist(key));
+        Assertions.assertTrue(keyService.isClientKeyValid(rawKey));
 
     }
 
@@ -139,9 +139,9 @@ public class TestKeyIntegration {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        String key = mvcResult.getResponse().getContentAsString();
+        String rawKey = mvcResult.getResponse().getContentAsString();
 
-        Assertions.assertTrue(keyService.doesExist(key));
+        Assertions.assertTrue(keyService.isClientKeyValid(rawKey));
 
     }
 

@@ -83,11 +83,11 @@ public class RateLimitingFilter extends OncePerRequestFilter {
     }
 
     private boolean hasValidKey(HttpServletRequest request) {
-        String apiKey = extractApiKey(request);
-        if (apiKey != null && !apiKey.isEmpty()) {
+        String rawClientKey = extractApiKey(request);
+        if (rawClientKey != null && !rawClientKey.isEmpty()) {
             LOGGER.info("Checking if API key is valid");
-            String hashedKey = hashingService.hashKey(apiKey);
-            boolean isValid = keyService.doesExist(hashedKey);
+            String hashedKey = hashingService.hashKey(rawClientKey);
+            boolean isValid = keyService.isClientKeyValid(rawClientKey);
             if (isValid) {
                 LOGGER.info("API key is valid: " + hashedKey);
                 return true;
