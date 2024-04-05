@@ -2,6 +2,8 @@ package com.kapia.registration;
 
 import com.redis.testcontainers.RedisContainer;
 import jakarta.transaction.Transactional;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @Testcontainers(disabledWithoutDocker = true)
 @Transactional
 public class TestRegistrationIntegration {
+
+    private static final String REGISTRATION_ENDPOINT = "/register";
+    private static final String VALID_USERNAME = "admin";
+    private static final String VALID_PASSWORD = "password";
+    private static final String VALID_AUTHORITY = "ROLE_ADMIN";
 
     @Container
     private static final RedisContainer REDIS_BUCKET_CONTAINER = new RedisContainer(DockerImageName.parse("redis:latest")).withExposedPorts(6379).withCommand("redis-server", "--loglevel", "debug");
@@ -61,18 +68,29 @@ public class TestRegistrationIntegration {
 
     private MockMvc mockMvc;
 
-    private static final String REGISTRATION_ENDPOINT = "/register";
-
     @BeforeEach
     public void setup() {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
+    }
+
+    private String createRequest(String username, String password, String authority) throws JSONException {
+
+        JSONObject json = new JSONObject();
+        json.put("username", username);
+        json.put("password", password);
+        json.put("authority", authority);
+
+        return json.toString();
+
     }
 
     @Test
     @Rollback
     public void givenRegistrationRequest_whenRegister_thenUserRegisteredSuccessfully() throws Exception {
 
-        String request = "{\"username\":\"testuser\",\"password\":\"password\",\"authority\":\"ROLE_ADMIN\"}";
+        String request = createRequest(VALID_USERNAME, VALID_PASSWORD, VALID_AUTHORITY);
+
+        System.out.println(request);
 
         mockMvc.perform((post(REGISTRATION_ENDPOINT).content(request)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -84,7 +102,7 @@ public class TestRegistrationIntegration {
     @Rollback
     public void givenRegistrationRequestWithExistingUsername_whenRegister_thenUserNotRegistered() throws Exception {
 
-        String request = "{\"username\":\"testuser\",\"password\":\"password\",\"authority\":\"ROLE_ADMIN\"}";
+        String request = createRequest(VALID_USERNAME, VALID_PASSWORD, VALID_AUTHORITY);
 
         mockMvc.perform((post(REGISTRATION_ENDPOINT).content(request)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -102,7 +120,7 @@ public class TestRegistrationIntegration {
     @Rollback
     public void givenRegistrationRequestWithInvalidRole_whenRegister_thenUserNotRegistered() throws Exception {
 
-        String request = "{\"username\":\"testuser\",\"password\":\"password\",\"authority\":\"ROLE_USER\"}";
+        String request = createRequest(VALID_USERNAME, VALID_PASSWORD, "ROLE_INVALID");
 
         mockMvc.perform((post(REGISTRATION_ENDPOINT).content(request)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -114,7 +132,7 @@ public class TestRegistrationIntegration {
     @Rollback
     public void givenRegistrationRequestWithForbiddenAuthority_whenRegister_thenUserNotRegistered() throws Exception {
 
-        String request = "{\"username\":\"testuser\",\"password\":\"password\",\"authority\":\"ROLE_SUPERUSER\"}";
+        String request = createRequest(VALID_USERNAME, VALID_PASSWORD, "ROLE_SUPERUSER");
 
         mockMvc.perform((post(REGISTRATION_ENDPOINT).content(request)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -126,7 +144,8 @@ public class TestRegistrationIntegration {
     @Test
     @Rollback
     public void givenRegistrationRequestWithNoPassword_whenRegister_thenUserNotRegistered() throws Exception {
-        String request = "{\"username\":\"testuser\",\"\":\"password\",\"authority\":\"ROLE_SUPERUSER\"}";
+
+        String request = createRequest(VALID_USERNAME, "", VALID_AUTHORITY);
 
         mockMvc.perform((post(REGISTRATION_ENDPOINT).content(request)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -137,7 +156,8 @@ public class TestRegistrationIntegration {
     @Test
     @Rollback
     public void givenRegistrationRequestWithNoUsername_whenRegister_thenUserNotRegistered() throws Exception {
-        String request = "{\"username\":\"\",\"\":\"password\",\"authority\":\"ROLE_SUPERUSER\"}";
+
+        String request = createRequest("", VALID_PASSWORD, VALID_AUTHORITY);
 
         mockMvc.perform((post(REGISTRATION_ENDPOINT).content(request)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -150,7 +170,8 @@ public class TestRegistrationIntegration {
     public void givenRegistrationRequest_whenLimitOfUsersReached_thenUserNotRegistered() throws Exception {
 
         for(int i = 0; i < 10; i++) {
-            String request = "{\"username\":\"testuser" + i + "\",\"password\":\"password\",\"authority\":\"ROLE_ADMIN\"}";
+
+            String request = createRequest(VALID_USERNAME + i, VALID_PASSWORD, VALID_AUTHORITY);
 
             mockMvc.perform((post(REGISTRATION_ENDPOINT).content(request)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -158,7 +179,7 @@ public class TestRegistrationIntegration {
                     .andExpect(status().isCreated());
         }
 
-        String request = "{\"username\":\"testuser\",\"password\":\"password\",\"authority\":\"ROLE_ADMIN\"}";
+        String request = createRequest(VALID_USERNAME, VALID_PASSWORD, VALID_AUTHORITY);
 
         mockMvc.perform((post(REGISTRATION_ENDPOINT).content(request)
                         .contentType(MediaType.APPLICATION_JSON)

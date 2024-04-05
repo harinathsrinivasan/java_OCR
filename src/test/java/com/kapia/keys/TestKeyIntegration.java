@@ -1,5 +1,6 @@
 package com.kapia.keys;
 
+import com.kapia.exceptionhandling.KeyExceptionHandler;
 import com.redis.testcontainers.RedisContainer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,6 +25,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @Testcontainers(disabledWithoutDocker = true)
 public class TestKeyIntegration {
+
+    private static final String KEY_ENDPOINT = "/key";
+    private static final String PRO_PLAN = "PRO";
+    private static final String BASIC_PLAN = "BASIC";
+    private static final String INVALID_PLAN = "INVALID";
+    private static final String PARAMETER_NAME = "plan";
 
     @Container
     private static final RedisContainer REDIS_BUCKET_CONTAINER = new RedisContainer(DockerImageName.parse("redis:latest")).withExposedPorts(6379).withCommand("redis-server", "--loglevel", "debug");
@@ -74,48 +81,48 @@ public class TestKeyIntegration {
     @Test
     public void givenBasicKeyRequest_whenRequesting_thenRequestIsSuccessful() throws Exception {
 
-        MvcResult mvcResult = mockMvc.perform(request(HttpMethod.GET, "/key").param("plan", "BASIC"))
+        MvcResult mvcResult = mockMvc.perform(request(HttpMethod.GET, KEY_ENDPOINT).param(PARAMETER_NAME, BASIC_PLAN))
                 .andExpect(status().isOk())
                 .andReturn();
 
         String key = mvcResult.getResponse().getContentAsString();
 
         Assertions.assertNotNull(key);
-        Assertions.assertTrue(key.startsWith("BASIC-"));
+        Assertions.assertTrue(key.startsWith(BASIC_PLAN));
 
     }
 
     @Test
     public void givenProKeyRequest_whenRequesting_thenRequestIsSuccessful() throws Exception {
 
-        MvcResult mvcResult = mockMvc.perform(request(HttpMethod.GET, "/key").param("plan", "PRO"))
+        MvcResult mvcResult = mockMvc.perform(request(HttpMethod.GET, KEY_ENDPOINT).param(PARAMETER_NAME, PRO_PLAN))
                 .andExpect(status().isOk())
                 .andReturn();
 
         String key = mvcResult.getResponse().getContentAsString();
 
         Assertions.assertNotNull(key);
-        Assertions.assertTrue(key.startsWith("PRO-"));
+        Assertions.assertTrue(key.startsWith(PRO_PLAN));
 
     }
 
     @Test
     public void givenInvalidKeRequest_whenRequesting_thenBadRequestIsReturned() throws Exception {
 
-        MvcResult mvcResult = mockMvc.perform(request(HttpMethod.GET, "/key").param("plan", "INVALID"))
+        MvcResult mvcResult = mockMvc.perform(request(HttpMethod.GET, KEY_ENDPOINT).param(PARAMETER_NAME, INVALID_PLAN))
                 .andExpect(status().isBadRequest())
                 .andReturn();
 
         String key = mvcResult.getResponse().getContentAsString();
 
-        Assertions.assertTrue(key.contains("Invalid key type"));
+        Assertions.assertTrue(key.contains(KeyExceptionHandler.getInvalidKeyMessage()));
 
     }
 
     @Test
     public void givenBasicKeyRequest_whenRequesting_thenKeyIsAddedToRedis() throws Exception {
 
-        MvcResult mvcResult = mockMvc.perform(request(HttpMethod.GET, "/key").param("plan", "BASIC"))
+        MvcResult mvcResult = mockMvc.perform(request(HttpMethod.GET, KEY_ENDPOINT).param(PARAMETER_NAME, BASIC_PLAN))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -128,7 +135,7 @@ public class TestKeyIntegration {
     @Test
     public void givenProKeyRequest_whenRequesting_thenKeyIsAddedToRedis() throws Exception {
 
-        MvcResult mvcResult = mockMvc.perform(request(HttpMethod.GET, "/key").param("plan", "PRO"))
+        MvcResult mvcResult = mockMvc.perform(request(HttpMethod.GET, KEY_ENDPOINT).param(PARAMETER_NAME, PRO_PLAN))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -141,13 +148,13 @@ public class TestKeyIntegration {
     @Test
     public void givenInvalidKeyRequest_whenRequesting_thenKeyIsNotAddedToRedis() throws Exception {
 
-        MvcResult mvcResult = mockMvc.perform(request(HttpMethod.GET, "/key").param("plan", "INVALID"))
+        MvcResult mvcResult = mockMvc.perform(request(HttpMethod.GET, KEY_ENDPOINT).param(PARAMETER_NAME, INVALID_PLAN))
                 .andExpect(status().isBadRequest())
                 .andReturn();
 
         String key = mvcResult.getResponse().getContentAsString();
 
-        Assertions.assertTrue(key.contains("Invalid key type"));
+        Assertions.assertTrue(key.contains(KeyExceptionHandler.getInvalidKeyMessage()));
 
     }
 

@@ -2,6 +2,8 @@ package com.kapia.registration;
 
 import com.kapia.users.ApplicationUserRepository;
 import org.junit.After;
+import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -12,9 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.willThrow;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.BDDMockito.*;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {RegistrationController.class, RegistrationService.class})
@@ -50,8 +51,8 @@ public class TestRegistrationController {
 
         ResponseEntity<String> response = registrationController.register(request);
 
-        assertEquals(201, response.getStatusCode().value());
-        assertEquals("User username created", response.getBody());
+        Assertions.assertEquals(201, response.getStatusCode().value());
+        Assertions.assertEquals("User username created", response.getBody());
 
         verify(registrationService, times(1)).register(request);
     }
@@ -62,7 +63,7 @@ public class TestRegistrationController {
 
         willThrow(new IllegalStateException("Invalid request")).given(registrationService).register(request);
 
-        assertThrows(IllegalStateException.class, () -> registrationController.register(request));
+        Assert.assertThrows(IllegalStateException.class, () -> registrationController.register(request));
 
         verify(registrationService, times(1)).register(request);
     }
@@ -73,7 +74,7 @@ public class TestRegistrationController {
 
         willThrow(new IllegalStateException("Limit of users reached")).given(registrationService).register(request);
 
-        assertThrows(IllegalStateException.class, () -> registrationController.register(request));
+        Assertions.assertThrows(IllegalStateException.class, () -> registrationController.register(request));
 
         verify(registrationService, times(1)).register(request);
     }
@@ -84,7 +85,7 @@ public class TestRegistrationController {
 
         willThrow(new IllegalStateException("Username is not available")).given(registrationService).register(request);
 
-        assertThrows(IllegalStateException.class, () -> registrationController.register(request));
+        Assertions.assertThrows(IllegalStateException.class, () -> registrationController.register(request));
 
         verify(registrationService, times(1)).register(request);
     }

@@ -3,6 +3,7 @@ package com.kapia.ocr;
 import com.kapia.filters.FileValidationFilter;
 import com.redis.testcontainers.RedisContainer;
 import jakarta.servlet.ServletContext;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,13 +26,14 @@ import org.testcontainers.utility.DockerImageName;
 import java.io.File;
 import java.nio.file.Files;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @Testcontainers(disabledWithoutDocker = true)
 public class TestIntegration {
+
+    private static final String MULTIPART_PART_NAME = "image";
 
     @Container
     private static final RedisContainer REDIS_BUCKET_CONTAINER = new RedisContainer(DockerImageName.parse("redis:latest")).withExposedPorts(6379).withCommand("redis-server", "--loglevel", "debug");
@@ -89,9 +91,9 @@ public class TestIntegration {
     public void givenWac_whenServletContext_thenItProvidesController() {
         ServletContext servletContext = webApplicationContext.getServletContext();
 
-        assertNotNull(servletContext);
-        assertTrue(servletContext instanceof MockServletContext);
-        assertNotNull(webApplicationContext.getBean("OCRController"));
+        Assertions.assertNotNull(servletContext);
+        Assertions.assertTrue(servletContext instanceof MockServletContext);
+        Assertions.assertNotNull(webApplicationContext.getBean("OCRController"));
 
     }
 
@@ -99,7 +101,7 @@ public class TestIntegration {
     public void givenImagePNG_whenProcessImage_thenReturnText() throws Exception {
 
         File file = new File("src/test/resources/sample_text_png.png");
-        MockMultipartFile multipartFile = new MockMultipartFile("image", file.getName(), "image/png", Files.readAllBytes(file.toPath()));
+        MockMultipartFile multipartFile = new MockMultipartFile(MULTIPART_PART_NAME, file.getName(), "image/png", Files.readAllBytes(file.toPath()));
         MockPart part = new MockPart("image", file.getName(), Files.readAllBytes(file.toPath()));
         part.getHeaders().setContentType(MediaType.IMAGE_PNG);
 
@@ -107,14 +109,14 @@ public class TestIntegration {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        assertEquals(CORRECT_RESPONSE, mvcResult.getResponse().getContentAsString());
+        Assertions.assertEquals(CORRECT_RESPONSE, mvcResult.getResponse().getContentAsString());
     }
 
     @Test
     public void givenImageJPEG_whenProcessImage_thenReturnText() throws Exception {
 
         File file = new File("src/test/resources/sample_text_jpeg.jpeg");
-        MockMultipartFile multipartFile = new MockMultipartFile("image", file.getName(), "image/jpeg", Files.readAllBytes(file.toPath()));
+        MockMultipartFile multipartFile = new MockMultipartFile(MULTIPART_PART_NAME, file.getName(), "image/jpeg", Files.readAllBytes(file.toPath()));
         MockPart part = new MockPart("image", file.getName(), Files.readAllBytes(file.toPath()));
         part.getHeaders().setContentType(MediaType.IMAGE_JPEG);
 
@@ -122,29 +124,29 @@ public class TestIntegration {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        assertEquals(CORRECT_RESPONSE, mvcResult.getResponse().getContentAsString());
+        Assertions.assertEquals(CORRECT_RESPONSE, mvcResult.getResponse().getContentAsString());
 
     }
 
     @Test
     public void givenImageJPG_whenProcessImage_thenReturnText() throws Exception {
         File file = new File("src/test/resources/sample_text_jpg.jpg");
-        MockMultipartFile multipartFile = new MockMultipartFile("image", file.getName(), "image/jpeg", Files.readAllBytes(file.toPath()));
-        MockPart part = new MockPart("image", file.getName(), Files.readAllBytes(file.toPath()));
+        MockMultipartFile multipartFile = new MockMultipartFile(MULTIPART_PART_NAME, file.getName(), "image/jpeg", Files.readAllBytes(file.toPath()));
+        MockPart part = new MockPart(MULTIPART_PART_NAME, file.getName(), Files.readAllBytes(file.toPath()));
         part.getHeaders().setContentType(MediaType.IMAGE_JPEG);
 
         MvcResult mvcResult = mockMvc.perform(multipart(OCR_ENDPOINT).file(multipartFile).part(part).contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        assertEquals(CORRECT_RESPONSE, mvcResult.getResponse().getContentAsString());
+        Assertions.assertEquals(CORRECT_RESPONSE, mvcResult.getResponse().getContentAsString());
     }
 
     @Test
     public void givenImageOfIncorrectType_whenProcessImage_thenReturnBadRequest() throws Exception {
 
         File file = new File("src/test/resources/sample_text_bmp.bmp");
-        MockMultipartFile multipartFile = new MockMultipartFile("image", file.getName(), "image/bmp", Files.readAllBytes(file.toPath()));
+        MockMultipartFile multipartFile = new MockMultipartFile(MULTIPART_PART_NAME, file.getName(), "image/bmp", Files.readAllBytes(file.toPath()));
 
         MvcResult mvcResult = mockMvc.perform(multipart(OCR_ENDPOINT).file(multipartFile))
                 .andExpect(status().isBadRequest())
@@ -155,7 +157,7 @@ public class TestIntegration {
     @Test
     public void givenIncorrectFile_whenProcessImage_thenReturnBadRequest() throws Exception {
 
-        MockMultipartFile multipartFile = new MockMultipartFile("image", "text.txt", "text/plain", "text".getBytes());
+        MockMultipartFile multipartFile = new MockMultipartFile(MULTIPART_PART_NAME, "text.txt", "text/plain", "text".getBytes());
 
         MvcResult mvcResult = mockMvc.perform(multipart(OCR_ENDPOINT).file(multipartFile))
                 .andExpect(status().isBadRequest())
@@ -165,7 +167,7 @@ public class TestIntegration {
     @Test
     public void givenEmptyRequest_whenProcessImage_thenReturnBadRequest() throws Exception {
 
-        MockMultipartFile multipartFile = new MockMultipartFile("image", null, null, (byte[]) null);
+        MockMultipartFile multipartFile = new MockMultipartFile(MULTIPART_PART_NAME, null, null, (byte[]) null);
 
         MvcResult mvcResult = mockMvc.perform(multipart(OCR_ENDPOINT).file(multipartFile))
                 .andExpect(status().isBadRequest())
@@ -182,7 +184,7 @@ public class TestIntegration {
 
     @Test
     public void givenRequestWithSpoofedContentType_whenProcessImage_thenReturnBadRequest() throws Exception {
-        MockMultipartFile multipartFile = new MockMultipartFile("image", "name", "image/png", "text".getBytes());
+        MockMultipartFile multipartFile = new MockMultipartFile(MULTIPART_PART_NAME, "name", "image/png", "text".getBytes());
 
         MvcResult mvcResult = mockMvc.perform(multipart(OCR_ENDPOINT).file(multipartFile))
                 .andExpect(status().isBadRequest())

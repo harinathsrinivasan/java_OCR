@@ -58,8 +58,7 @@ public class KeyService {
     }
 
     public boolean doesExist(String key) {
-        key = hashRawKey(key);
-        return redisCommands.exists(key) == 1;
+        return redisCommands.exists(hashRawKey(key)) == 1;
     }
 
 }

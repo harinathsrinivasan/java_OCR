@@ -1,6 +1,7 @@
 package com.kapia.ocr;
 
 import net.sourceforge.tess4j.TesseractException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,7 +18,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ContextConfiguration(classes = {OCRService.class})
 @ExtendWith(SpringExtension.class)
@@ -52,14 +52,14 @@ public class TestOCRService {
 
         String response = ocrService.processImage(multipartFile);
 
-        assertEquals(expectedText, response);
+        Assertions.assertEquals(expectedText, response);
 
     }
 
     @Test
     public void givenNoImage_whenProcessImage_thenThrowIllegalArgumentException() {
 
-        assertThrows(IOException.class, () -> ocrService.processImage(null));
+        Assertions.assertThrows(IOException.class, () -> ocrService.processImage(null));
 
     }
 
@@ -67,7 +67,7 @@ public class TestOCRService {
     public void givenInvalidImageType_whenProcessImage_thenThrowIOException() {
 
         MultipartFile multipartFile = new MockMultipartFile("file", "file.txt", "text/plain", "some text".getBytes());
-        assertThrows(IOException.class, () -> ocrService.processImage(multipartFile));
+        Assertions.assertThrows(IOException.class, () -> ocrService.processImage(multipartFile));
 
     }
 

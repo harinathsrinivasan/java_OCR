@@ -10,9 +10,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 public class TestHashingService {
 
-    String EXAMPLE_BASIC_KEY = "BASIC-8186f52b84ab726ed62ddaaeb8e9b7efd180f01e7721134a39d14f1b2de4045e";
-    String EXAMPLE_PRO_KEY = "PRO-8186f52b84ab726ed62ddaaeb8e9b7efd180f01e7721134a39d14f1b2de4045e";
-    String EXAMPLE_STRING = "some string";
+    final String EXAMPLE_BASIC_KEY = "BASIC-8186f52b84ab726ed62ddaaeb8e9b7efd180f01e7721134a39d14f1b2de4045e";
+    final String EXAMPLE_PRO_KEY = "PRO-8186f52b84ab726ed62ddaaeb8e9b7efd180f01e7721134a39d14f1b2de4045e";
+    final String EXAMPLE_STRING = "some string";
 
     @Test
     public void givenHashingService_whenInstantiated_thenNoExceptions() {

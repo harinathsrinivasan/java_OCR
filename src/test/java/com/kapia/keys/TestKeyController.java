@@ -4,6 +4,7 @@ import com.kapia.ratelimiting.PricingPlan;
 import com.kapia.redis.RedisKeyConfig;
 import com.kapia.util.HashingService;
 import com.redis.testcontainers.RedisContainer;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,8 +17,6 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ContextConfiguration(classes = {KeyController.class, KeyService.class, HashingService.class, RedisKeyConfig.class})
@@ -58,7 +57,7 @@ public class TestKeyController {
 
         String key = keyController.getKey(BASIC_PLAN);
 
-        assertEquals(BASIC_KEY, key);
+        Assertions.assertEquals(BASIC_KEY, key);
 
         verify(keyService, times(1)).generateKeyAndAddToRedis(PricingPlan.valueOf(BASIC_PLAN));
 
@@ -71,7 +70,7 @@ public class TestKeyController {
 
         String key = keyController.getKey(PRO_PLAN);
 
-        assertEquals(PRO_KEY, key);
+        Assertions.assertEquals(PRO_KEY, key);
 
         verify(keyService, times(1)).generateKeyAndAddToRedis(PricingPlan.valueOf(PRO_PLAN));
 
@@ -80,7 +79,7 @@ public class TestKeyController {
     @Test
     public void givenInvalidGetKeyR_whenGetKey_thenThrowsException() {
 
-        assertThrows(IllegalArgumentException.class, () -> keyController.getKey(INVALID_PLAN));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> keyController.getKey(INVALID_PLAN));
 
         verify(keyService, never()).generateKeyAndAddToRedis(any());
 

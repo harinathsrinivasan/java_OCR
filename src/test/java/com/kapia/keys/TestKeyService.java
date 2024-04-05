@@ -4,6 +4,7 @@ import com.kapia.ratelimiting.PricingPlan;
 import com.kapia.redis.RedisKeyConfig;
 import com.kapia.util.HashingService;
 import com.redis.testcontainers.RedisContainer;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +15,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @Testcontainers(disabledWithoutDocker = true)
@@ -49,29 +48,28 @@ public class TestKeyService {
     public void givenKeyService_whenGenerateKeyBasic_thenKeyIsGenerated() {
         String key = keyService.generateKeyAndAddToRedis(PricingPlan.BASIC);
 
-        assertThat(key.length()).isGreaterThan(0);
-        assertThat(key).startsWith(PricingPlan.BASIC.name());
+        Assertions.assertTrue(key.length() > 0);
+        Assertions.assertTrue(key.startsWith(PricingPlan.BASIC.name()));
     }
 
     @Test
     public void givenKeyService_whenGenerateKeyPro_thenKeyIsGenerated() {
         String key = keyService.generateKeyAndAddToRedis(PricingPlan.PRO);
 
-        assertThat(key.length()).isGreaterThan(0);
-        assertThat(key).startsWith(PricingPlan.PRO.name());
+        Assertions.assertTrue(key.length() > 0);
+        Assertions.assertTrue(key.startsWith(PricingPlan.PRO.name()));
     }
 
     @Test
     public void givenValidKey_whenValidateKey_thenKeyIsValid() {
         String key = keyService.generateKeyAndAddToRedis(PricingPlan.BASIC);
-        assertThat(keyService.doesExist(key)).isTrue();
+        Assertions.assertTrue(keyService.doesExist(key));
     }
 
     @Test
     public void givenInvalidKey_whenValidateKey_thenKeyIsInvalid() {
-        String key = keyService.generateKeyAndAddToRedis(PricingPlan.BASIC);
-        key = key.substring(1);
-        assertThat(keyService.doesExist(key)).isFalse();
+        String key = keyService.generateKeyAndAddToRedis(PricingPlan.BASIC) + "invalid";
+        Assertions.assertFalse(keyService.doesExist(key));
     }
 
 

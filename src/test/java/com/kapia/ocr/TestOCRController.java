@@ -1,6 +1,7 @@
 package com.kapia.ocr;
 
 import net.sourceforge.tess4j.TesseractException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,9 +17,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
@@ -55,8 +53,8 @@ public class TestOCRController {
 
         ResponseEntity<String> response = ocrController.processImage(multipartFile);
 
-        assertEquals(expectedText, response.getBody());
-        assertEquals(expectedStatus, response.getStatusCode());
+        Assertions.assertEquals(expectedText, response.getBody());
+        Assertions.assertEquals(expectedStatus, response.getStatusCode());
 
         verify(ocrService, times(1)).processImage(any());
 
@@ -70,7 +68,7 @@ public class TestOCRController {
 
         when(ocrService.processImage(any())).thenThrow(new IOException());
 
-        assertThrows(IOException.class, () -> ocrController.processImage(multipartFile));
+        Assertions.assertThrows(IOException.class, () -> ocrController.processImage(multipartFile));
 
         verify(ocrService, times(1)).processImage(any());
     }
@@ -85,7 +83,7 @@ public class TestOCRController {
             throw new TesseractException("Error processing the image");
         });
 
-        assertThrows(TesseractException.class, () -> ocrController.processImage(multipartFile));
+        Assertions.assertThrows(TesseractException.class, () -> ocrController.processImage(multipartFile));
 
         verify(ocrService, times(1)).processImage(any());
 

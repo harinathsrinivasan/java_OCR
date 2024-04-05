@@ -2,6 +2,9 @@ package com.kapia.registration;
 
 import com.redis.testcontainers.RedisContainer;
 import jakarta.transaction.Transactional;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,15 +18,15 @@ import org.testcontainers.utility.DockerImageName;
 
 import java.time.LocalDateTime;
 
-import static org.junit.Assert.assertThrows;
-
 @SpringBootTest
 @Testcontainers(disabledWithoutDocker = true)
 @Rollback
 @Transactional
 public class TestRegistrationService {
 
-    private final static String ROLE_ADMIN_NAME = "ROLE_ADMIN";
+    private final static String VALID_ADMIN_ROLE = "ROLE_ADMIN";
+    private final static String VALID_USERNAME = "admin";
+    private final static String VALID_PASSWORD = "admin";
 
     @Autowired
     private RegistrationService registrationService;
@@ -60,60 +63,60 @@ public class TestRegistrationService {
 
     @Test
     public void givenRegistrationRequest_whenRegister_thenNoException() {
-        RegistrationRequest request = new RegistrationRequest("admin" + LocalDateTime.now(), "admin", ROLE_ADMIN_NAME);
+        RegistrationRequest request = new RegistrationRequest(VALID_USERNAME + LocalDateTime.now(), VALID_PASSWORD, VALID_ADMIN_ROLE);
 
         registrationService.register(request);
 
-        assertThrows(IllegalStateException.class, () -> registrationService.register(request));
+        Assertions.assertThrows(IllegalStateException.class, () -> registrationService.register(request));
     }
 
     @Test
     public void givenRegistrationRequestWithInvalidRole_whenRegister_thenException() {
-        RegistrationRequest request = new RegistrationRequest("admin", "admin", "INVALID ROLE");
+        RegistrationRequest request = new RegistrationRequest(VALID_USERNAME, VALID_PASSWORD, "INVALID ROLE");
 
-        assertThrows(IllegalStateException.class, () -> registrationService.register(request));
+        Assertions.assertThrows(IllegalStateException.class, () -> registrationService.register(request));
     }
 
     @Test
     public void givenRegistrationRequestWithExistingUser_whenRegister_thenException() {
-        RegistrationRequest request = new RegistrationRequest("admin", "admin", ROLE_ADMIN_NAME);
+        RegistrationRequest request = new RegistrationRequest(VALID_USERNAME, VALID_PASSWORD, VALID_ADMIN_ROLE);
 
         registrationService.register(request);
 
-        assertThrows(IllegalStateException.class, () -> registrationService.register(request));
+        Assertions.assertThrows(IllegalStateException.class, () -> registrationService.register(request));
     }
 
     @Test
     public void givenRegistrationRequestWithLimitOfUsersReached_whenRegister_thenException() {
 
         for (int i = 0; i < 10; i++) {
-            registrationService.register(new RegistrationRequest("admin" + i, "admin", ROLE_ADMIN_NAME));
+            registrationService.register(new RegistrationRequest(VALID_USERNAME + i, VALID_PASSWORD, VALID_ADMIN_ROLE));
         }
 
-        RegistrationRequest request = new RegistrationRequest("admin11", "admin", ROLE_ADMIN_NAME);
+        RegistrationRequest request = new RegistrationRequest("admin11", VALID_PASSWORD, VALID_ADMIN_ROLE);
 
-        assertThrows(IllegalStateException.class, () -> registrationService.register(request));
+        Assertions.assertThrows(IllegalStateException.class, () -> registrationService.register(request));
     }
 
     @Test
     public void givenRegistrationRequestWithNoUsername_whenRegister_thenException() {
-        RegistrationRequest request = new RegistrationRequest("", "admin", ROLE_ADMIN_NAME);
+        RegistrationRequest request = new RegistrationRequest("", VALID_PASSWORD, VALID_ADMIN_ROLE);
 
-        assertThrows(IllegalStateException.class, () -> registrationService.register(request));
+        Assertions.assertThrows(IllegalStateException.class, () -> registrationService.register(request));
     }
 
     @Test
     public void givenRegistrationRequestWithNoPassword_whenRegister_thenException() {
-        RegistrationRequest request = new RegistrationRequest("admin", "", ROLE_ADMIN_NAME);
+        RegistrationRequest request = new RegistrationRequest(VALID_USERNAME, "", VALID_ADMIN_ROLE);
 
-        assertThrows(IllegalStateException.class, () -> registrationService.register(request));
+        Assertions.assertThrows(IllegalStateException.class, () -> registrationService.register(request));
     }
 
     @Test
     public void givenRegistrationRequestWithNoRole_whenRegister_thenException() {
-        RegistrationRequest request = new RegistrationRequest("admin", "admin", "");
+        RegistrationRequest request = new RegistrationRequest(VALID_USERNAME, VALID_PASSWORD, "");
 
-        assertThrows(IllegalStateException.class, () -> registrationService.register(request));
+        Assertions.assertThrows(IllegalStateException.class, () -> registrationService.register(request));
     }
 
 }
