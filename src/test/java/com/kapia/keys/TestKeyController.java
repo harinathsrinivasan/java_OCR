@@ -18,12 +18,19 @@ import org.testcontainers.utility.DockerImageName;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ContextConfiguration(classes = {KeyController.class, KeyService.class, HashingService.class, RedisKeyConfig.class})
 @ExtendWith(SpringExtension.class)
 @Testcontainers(disabledWithoutDocker = true)
 public class TestKeyController {
+
+    private static final String PRO_PLAN = "PRO";
+    private static final String BASIC_PLAN = "BASIC";
+    private static final String INVALID_PLAN = "INVALID";
+
+    private static final String PRO_KEY = "PRO-123";
+    private static final String BASIC_KEY = "BASIC-123";
 
     @Container
     private static final RedisContainer REDIS_KEY_CONTAINER = new RedisContainer(DockerImageName.parse("redis:latest")).withExposedPorts(6379).withCommand("redis-server", "--loglevel", "debug");
@@ -47,29 +54,35 @@ public class TestKeyController {
     @Test
     public void givenBasicGetKey_whenGetKey_thenReturnsKey() {
 
-        when(keyService.generateKeyAndAddToRedis(PricingPlan.valueOf("BASIC"))).thenReturn("BASIC-123");
+        when(keyService.generateKeyAndAddToRedis(PricingPlan.valueOf(BASIC_PLAN))).thenReturn(BASIC_KEY);
 
-        String key = keyController.getKey("BASIC");
+        String key = keyController.getKey(BASIC_PLAN);
 
-        assertEquals("BASIC-123", key);
+        assertEquals(BASIC_KEY, key);
+
+        verify(keyService, times(1)).generateKeyAndAddToRedis(PricingPlan.valueOf(BASIC_PLAN));
 
     }
 
     @Test
     public void givenProGetKey_whenGetKey_thenReturnsKey() {
 
-        when(keyService.generateKeyAndAddToRedis(PricingPlan.valueOf("PRO"))).thenReturn("PRO-123");
+        when(keyService.generateKeyAndAddToRedis(PricingPlan.valueOf(PRO_PLAN))).thenReturn(PRO_KEY);
 
-        String key = keyController.getKey("PRO");
+        String key = keyController.getKey(PRO_PLAN);
 
-        assertEquals("PRO-123", key);
+        assertEquals(PRO_KEY, key);
+
+        verify(keyService, times(1)).generateKeyAndAddToRedis(PricingPlan.valueOf(PRO_PLAN));
 
     }
 
     @Test
     public void givenInvalidGetKeyR_whenGetKey_thenThrowsException() {
 
-        assertThrows(IllegalArgumentException.class, () -> keyController.getKey("INVALID"));
+        assertThrows(IllegalArgumentException.class, () -> keyController.getKey(INVALID_PLAN));
+
+        verify(keyService, never()).generateKeyAndAddToRedis(any());
 
     }
 

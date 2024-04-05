@@ -1,21 +1,15 @@
 package com.kapia.registration;
 
-import com.kapia.users.ApplicationUser;
 import com.redis.testcontainers.RedisContainer;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -67,7 +61,7 @@ public class TestRegistrationIntegration {
 
     private MockMvc mockMvc;
 
-    private static final String URL = "/register";
+    private static final String REGISTRATION_ENDPOINT = "/register";
 
     @BeforeEach
     public void setup() {
@@ -80,7 +74,7 @@ public class TestRegistrationIntegration {
 
         String request = "{\"username\":\"testuser\",\"password\":\"password\",\"authority\":\"ROLE_ADMIN\"}";
 
-        mockMvc.perform((post(URL).content(request)
+        mockMvc.perform((post(REGISTRATION_ENDPOINT).content(request)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)))
                 .andExpect(status().isCreated());
@@ -92,12 +86,12 @@ public class TestRegistrationIntegration {
 
         String request = "{\"username\":\"testuser\",\"password\":\"password\",\"authority\":\"ROLE_ADMIN\"}";
 
-        mockMvc.perform((post(URL).content(request)
+        mockMvc.perform((post(REGISTRATION_ENDPOINT).content(request)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)))
                 .andExpect(status().isCreated());
 
-        mockMvc.perform((post(URL).content(request)
+        mockMvc.perform((post(REGISTRATION_ENDPOINT).content(request)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)))
                 .andExpect(status().isBadRequest());
@@ -110,7 +104,7 @@ public class TestRegistrationIntegration {
 
         String request = "{\"username\":\"testuser\",\"password\":\"password\",\"authority\":\"ROLE_USER\"}";
 
-        mockMvc.perform((post(URL).content(request)
+        mockMvc.perform((post(REGISTRATION_ENDPOINT).content(request)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)))
                 .andExpect(status().isBadRequest());
@@ -122,7 +116,7 @@ public class TestRegistrationIntegration {
 
         String request = "{\"username\":\"testuser\",\"password\":\"password\",\"authority\":\"ROLE_SUPERUSER\"}";
 
-        mockMvc.perform((post(URL).content(request)
+        mockMvc.perform((post(REGISTRATION_ENDPOINT).content(request)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)))
                 .andExpect(status().isBadRequest());
@@ -134,7 +128,7 @@ public class TestRegistrationIntegration {
     public void givenRegistrationRequestWithNoPassword_whenRegister_thenUserNotRegistered() throws Exception {
         String request = "{\"username\":\"testuser\",\"\":\"password\",\"authority\":\"ROLE_SUPERUSER\"}";
 
-        mockMvc.perform((post(URL).content(request)
+        mockMvc.perform((post(REGISTRATION_ENDPOINT).content(request)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)))
                 .andExpect(status().isBadRequest());
@@ -145,7 +139,7 @@ public class TestRegistrationIntegration {
     public void givenRegistrationRequestWithNoUsername_whenRegister_thenUserNotRegistered() throws Exception {
         String request = "{\"username\":\"\",\"\":\"password\",\"authority\":\"ROLE_SUPERUSER\"}";
 
-        mockMvc.perform((post(URL).content(request)
+        mockMvc.perform((post(REGISTRATION_ENDPOINT).content(request)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)))
                 .andExpect(status().isBadRequest());
@@ -158,7 +152,7 @@ public class TestRegistrationIntegration {
         for(int i = 0; i < 10; i++) {
             String request = "{\"username\":\"testuser" + i + "\",\"password\":\"password\",\"authority\":\"ROLE_ADMIN\"}";
 
-            mockMvc.perform((post(URL).content(request)
+            mockMvc.perform((post(REGISTRATION_ENDPOINT).content(request)
                             .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON)))
                     .andExpect(status().isCreated());
@@ -166,7 +160,7 @@ public class TestRegistrationIntegration {
 
         String request = "{\"username\":\"testuser\",\"password\":\"password\",\"authority\":\"ROLE_ADMIN\"}";
 
-        mockMvc.perform((post(URL).content(request)
+        mockMvc.perform((post(REGISTRATION_ENDPOINT).content(request)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)))
                 .andExpect(status().isBadRequest());

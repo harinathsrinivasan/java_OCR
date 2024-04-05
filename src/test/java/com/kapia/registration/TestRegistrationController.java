@@ -50,10 +50,10 @@ public class TestRegistrationController {
 
         ResponseEntity<String> response = registrationController.register(request);
 
-        verify(registrationService, times(1)).register(request);
-
         assertEquals(201, response.getStatusCode().value());
         assertEquals("User username created", response.getBody());
+
+        verify(registrationService, times(1)).register(request);
     }
 
     @Test
