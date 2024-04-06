@@ -17,7 +17,7 @@ The OCR (Optical Character Recognition) service utilizes the Tesseract library t
 - Interactive API documentation through Swagger UI for easy exploration and testing of endpoints.
 
 ## Docker image
-**You can find the docker image of the whole application [here](https://hub.docker.com/layers/kapiaszczyk/java_ocr/0.1.0/images/sha256-eed16d49f8bd1a458c1f966bb3c050da680fa54f05b89c3f711aaf9098d9fd81?context=repo).**
+**You can find the docker image of the whole application [here](https://hub.docker.com/layers/kapiaszczyk/java_ocr/0.2.0/images/sha256-df24b1a27c906c81c9719416bdd33819c95f4b9aa68655fbd5965d5c3eafe025?context=repo).**
 
 ## Features
 
