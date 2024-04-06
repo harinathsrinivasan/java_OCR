@@ -1,0 +1,62 @@
+name: ocr-services
+version: '1'
+services:
+  ocr-service:
+    image: "kapiaszczyk/java_ocr:0.2.0"
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis-buckets
+      - redis-keystore
+      - database
+    environment:
+      REDIS_BUCKET_HOST: redis-buckets
+      REDIS_BUCKET_PORT: 6379
+      REDIS_BUCKET_PASSWORD: password
+      REDIS_KEY_HOST: redis-keystore
+      REDIS_KEY_PORT: 6380
+      REDIS_KEY_PASSWORD: password
+      DB_HOST: database
+      DB_PORT: 3306
+      DB_USERNAME: ocr
+      DB_PASSWORD: password
+      DB_NAME: users_credentials
+      KEY_SALT: randomSalt
+    networks:
+      - main
+    restart: on-failure
+
+  redis-buckets:
+    image: "redis:latest"
+    ports:
+      - "6379:6379"
+    networks:
+      - main
+    command: ["--port", "6379"]
+    volumes:
+      - ./redis/bucket.conf:/usr/local/etc/redis/redis.conf
+
+  redis-keystore:
+    image: "redis:latest"
+    ports:
+      - "6380:6380"
+    networks:
+      - main
+    command: ["--port", "6380"]
+    volumes:
+      - ./redis/keystore.conf:/usr/local/etc/redis/redis.conf
+
+  database:
+    image: "mariadb:latest"
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      MARIADB_ROOT_PASSWORD: password
+    networks:
+      - main
+
+networks:
+  main:
+    driver: bridge
