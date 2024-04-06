@@ -1,6 +1,7 @@
 package com.kapia.util;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
@@ -20,7 +21,7 @@ public class TestIpResolverService {
         IpResolverService ipResolverService = new IpResolverService();
         String extractedIp = ipResolverService.extractIpFromRequest(request);
 
-        assert extractedIp.equals(expectedIp);
+        Assertions.assertEquals(expectedIp, extractedIp);
     }
 
     @Test
@@ -31,18 +32,18 @@ public class TestIpResolverService {
 
         String extractedIp = ipResolverService.extractIpFromRequest(request);
 
-        assert extractedIp.equals(request.getRemoteAddr());
+        Assertions.assertEquals(expectedIp, extractedIp);
     }
 
     @Test
     public void givenRequest_whenExtractIpFromRequestIfValid_thenReturnIp() {
         MockHttpServletRequest request = new MockHttpServletRequest();
-        String ips = request.getRemoteAddr();
+        String expectedIp = request.getRemoteAddr();
         IpResolverService ipResolverService = new IpResolverService();
 
         String extractedIp = ipResolverService.extractIpFromRequestIfValid(request);
 
-        assert extractedIp.equals(ips);
+        Assertions.assertEquals(expectedIp, extractedIp);
     }
 
     @Test
@@ -54,7 +55,7 @@ public class TestIpResolverService {
 
         String extractedIp = ipResolverService.extractIpFromRequestIfValid(request);
 
-        assert extractedIp == null;
+        Assertions.assertEquals(null, extractedIp);
     }
 
     @Test
@@ -64,7 +65,7 @@ public class TestIpResolverService {
 
         boolean isValid = ipResolverService.isIpAddressValid(ip);
 
-        assert isValid;
+        Assertions.assertTrue(isValid);
     }
 
     @Test
@@ -74,7 +75,7 @@ public class TestIpResolverService {
 
         boolean isValid = ipResolverService.isIpAddressValid(ip);
 
-        assert !isValid;
+        Assertions.assertFalse(isValid);
     }
 
 }

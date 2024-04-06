@@ -56,7 +56,7 @@ public class TestIntegration {
     }
 
     @Container
-    private static final MariaDBContainer MARIADB_CONTAINER = new MariaDBContainer(DockerImageName.parse("mariadb:latest")).withDatabaseName("users_credentials").withUsername("ocr").withPassword("password");
+    private static final MariaDBContainer<?> MARIADB_CONTAINER = new MariaDBContainer<>(DockerImageName.parse("mariadb:latest")).withDatabaseName("users_credentials").withUsername("ocr").withPassword("password");
 
     @DynamicPropertySource
     private static void registerMariaDBProperties(DynamicPropertyRegistry registry) {
@@ -148,7 +148,7 @@ public class TestIntegration {
         File file = new File("src/test/resources/sample_text_bmp.bmp");
         MockMultipartFile multipartFile = new MockMultipartFile(MULTIPART_PART_NAME, file.getName(), "image/bmp", Files.readAllBytes(file.toPath()));
 
-        MvcResult mvcResult = mockMvc.perform(multipart(OCR_ENDPOINT).file(multipartFile))
+        mockMvc.perform(multipart(OCR_ENDPOINT).file(multipartFile))
                 .andExpect(status().isBadRequest())
                 .andReturn();
 
@@ -159,7 +159,7 @@ public class TestIntegration {
 
         MockMultipartFile multipartFile = new MockMultipartFile(MULTIPART_PART_NAME, "text.txt", "text/plain", "text".getBytes());
 
-        MvcResult mvcResult = mockMvc.perform(multipart(OCR_ENDPOINT).file(multipartFile))
+        mockMvc.perform(multipart(OCR_ENDPOINT).file(multipartFile))
                 .andExpect(status().isBadRequest())
                 .andReturn();
     }
@@ -169,7 +169,7 @@ public class TestIntegration {
 
         MockMultipartFile multipartFile = new MockMultipartFile(MULTIPART_PART_NAME, null, null, (byte[]) null);
 
-        MvcResult mvcResult = mockMvc.perform(multipart(OCR_ENDPOINT).file(multipartFile))
+        mockMvc.perform(multipart(OCR_ENDPOINT).file(multipartFile))
                 .andExpect(status().isBadRequest())
                 .andReturn();
 
@@ -186,7 +186,7 @@ public class TestIntegration {
     public void givenRequestWithSpoofedContentType_whenProcessImage_thenReturnBadRequest() throws Exception {
         MockMultipartFile multipartFile = new MockMultipartFile(MULTIPART_PART_NAME, "name", "image/png", "text".getBytes());
 
-        MvcResult mvcResult = mockMvc.perform(multipart(OCR_ENDPOINT).file(multipartFile))
+        mockMvc.perform(multipart(OCR_ENDPOINT).file(multipartFile))
                 .andExpect(status().isBadRequest())
                 .andReturn();
 

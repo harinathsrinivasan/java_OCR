@@ -53,7 +53,7 @@ public class TestKeyIntegration {
     }
 
     @Container
-    private static final MariaDBContainer MARIADB_CONTAINER = new MariaDBContainer(DockerImageName.parse("mariadb:latest")).withDatabaseName("users_credentials").withUsername("ocr").withPassword("password");
+    private static final MariaDBContainer<?> MARIADB_CONTAINER = new MariaDBContainer<>(DockerImageName.parse("mariadb:latest")).withDatabaseName("users_credentials").withUsername("ocr").withPassword("password");
 
     @DynamicPropertySource
     private static void registerMariaDBProperties(DynamicPropertyRegistry registry) {

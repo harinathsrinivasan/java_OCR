@@ -1,6 +1,9 @@
 package com.kapia.security;
 
+import com.kapia.registration.RegistrationRequest;
 import com.redis.testcontainers.RedisContainer;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,6 +48,8 @@ public class TestSecurity {
     private final static String SWAGGER_UI_ENDPOINT = "/swagger-ui.html";
     private final static String ACTUATOR_ENDPOINT = "/actuator";
 
+    private final String VALID_USERNAME = "username";
+    private final String VALID_PASSWORD = "password";
     private final static String ADMIN_AUTHORITY = "ROLE_ADMIN";
     private final static String SUPERUSER_AUTHORITY = "ROLE_SUPERUSER";
 
@@ -69,7 +74,7 @@ public class TestSecurity {
     }
 
     @Container
-    private static final MariaDBContainer MARIADB_CONTAINER = new MariaDBContainer(DockerImageName.parse("mariadb:latest")).withDatabaseName("users_credentials").withUsername("ocr").withPassword("password");
+    private static final MariaDBContainer<?> MARIADB_CONTAINER = new MariaDBContainer<>(DockerImageName.parse("mariadb:latest")).withDatabaseName("users_credentials").withUsername("ocr").withPassword("password");
 
     @DynamicPropertySource
     private static void registerMariaDBProperties(DynamicPropertyRegistry registry) {
@@ -91,6 +96,17 @@ public class TestSecurity {
     @BeforeEach
     public void setup() {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).apply(springSecurity(springSecurityFilterChain)).build();
+    }
+
+    private String createRequest(String username, String password, String authority) throws JSONException {
+
+        JSONObject json = new JSONObject();
+        json.put("username", username);
+        json.put("password", password);
+        json.put("authority", authority);
+
+        return json.toString();
+
     }
 
     @Test
@@ -129,7 +145,7 @@ public class TestSecurity {
     @WithMockUser(authorities = {ADMIN_AUTHORITY, SUPERUSER_AUTHORITY})
     public void givenRegistrationRequestWithAuthorisation_whenRegister_thenUserRegisteredSuccessfully() throws Exception {
 
-        String request = "{\"username\":\"testuser\",\"password\":\"password\",\"authority\":\"ROLE_ADMIN\"}";
+        String request = createRequest(VALID_USERNAME, VALID_PASSWORD, ADMIN_AUTHORITY);
 
         mockMvc.perform((post(REGISTRATION_ENDPOINT).content(request)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -141,7 +157,7 @@ public class TestSecurity {
     @WithAnonymousUser
     public void givenRegistrationRequestWithoutAuthorisation_whenRegister_thenUserNotRegistered() throws Exception {
 
-        String request = "{\"username\":\"testuser\",\"password\":\"password\",\"authority\":\"ROLE_ADMIN\"}";
+        String request = createRequest(VALID_USERNAME, VALID_PASSWORD, ADMIN_AUTHORITY);
 
         mockMvc.perform(request(HttpMethod.POST, REGISTRATION_ENDPOINT)
                 .contentType(MediaType.APPLICATION_JSON)

@@ -17,8 +17,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 @ContextConfiguration(classes = {OCRService.class})
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")

@@ -1,7 +1,7 @@
 package com.kapia.util;
 
-import com.kapia.util.HashingService;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -15,21 +15,11 @@ public class TestHashingService {
     final String EXAMPLE_STRING = "some string";
 
     @Test
-    public void givenHashingService_whenInstantiated_thenNoExceptions() {
-        HashingService hashingService = new HashingService();
-    }
-
-    @Test
-    public void givenString_whenHashed_thenNoExceptions() {
-        HashingService hashingService = new HashingService();
-        String hashed = hashingService.hash(EXAMPLE_STRING);
-    }
-
-    @Test
     public void givenString_whenHashed_thenReturnHash() {
         HashingService hashingService = new HashingService();
         String hashed = hashingService.hash(EXAMPLE_STRING);
-        assert hashed.length() > 0;
+
+        Assertions.assertTrue(hashed.length() > 0);
     }
 
     @Test
@@ -37,10 +27,11 @@ public class TestHashingService {
         HashingService hashingService = new HashingService();
         String hashedBasic = hashingService.hashKey(EXAMPLE_BASIC_KEY);
         String hashedPro = hashingService.hashKey(EXAMPLE_PRO_KEY);
-        assert hashedBasic.startsWith("BA");
-        assert hashedPro.startsWith("PR");
-        assert hashedBasic.length() == 66;
-        assert hashedPro.length() == 66;
+
+        Assertions.assertTrue(hashedBasic.startsWith("BA"));
+        Assertions.assertTrue(hashedPro.startsWith("PR"));
+        Assertions.assertTrue(hashedBasic.length() == 66);
+        Assertions.assertTrue(hashedPro.length() == 66);
     }
 
 }

@@ -2,8 +2,6 @@ package com.kapia.registration;
 
 import com.redis.testcontainers.RedisContainer;
 import jakarta.transaction.Transactional;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +50,7 @@ public class TestRegistrationService {
     }
 
     @Container
-    private static final MariaDBContainer MARIADB_CONTAINER = new MariaDBContainer(DockerImageName.parse("mariadb:latest")).withDatabaseName("users_credentials").withUsername("ocr").withPassword("password");
+    private static final MariaDBContainer<?> MARIADB_CONTAINER = new MariaDBContainer<>(DockerImageName.parse("mariadb:latest")).withDatabaseName("users_credentials").withUsername("ocr").withPassword("password");
 
     @DynamicPropertySource
     private static void registerMariaDBProperties(DynamicPropertyRegistry registry) {
