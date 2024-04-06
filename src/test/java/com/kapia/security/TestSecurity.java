@@ -1,6 +1,5 @@
 package com.kapia.security;
 
-import com.kapia.registration.RegistrationRequest;
 import com.redis.testcontainers.RedisContainer;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -122,7 +121,7 @@ public class TestSecurity {
     @WithAnonymousUser
     public void givenSwaggerUiRequest_whenGetSwaggerUi_thenReturnsSwaggerUi() throws Exception {
 
-        mockMvc.perform(request(HttpMethod.GET, "/swagger-ui.html"))
+        mockMvc.perform(request(HttpMethod.GET, SWAGGER_UI_ENDPOINT))
                 .andExpect(status().is3xxRedirection());
 
     }
