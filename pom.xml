@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.kapia</groupId>
     <artifactId>ocr</artifactId>
-    <version>0.2.0-SNAPSHOT</version>
+    <version>0.2.0</version>
     <name>com.kapia</name>
     <properties>
         <java.version>21</java.version>
