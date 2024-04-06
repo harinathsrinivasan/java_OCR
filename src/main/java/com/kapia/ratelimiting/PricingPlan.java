@@ -1,7 +1,6 @@
 package com.kapia.ratelimiting;
 
 import io.github.bucket4j.Bandwidth;
-import io.github.bucket4j.Refill;
 import org.springframework.core.env.Environment;
 
 import java.time.Duration;
@@ -30,18 +29,22 @@ public enum PricingPlan {
     static private Bandwidth getBandwidth(Environment environment, String plan) {
         int capacity = environment.getProperty("pricing.plans." + plan + ".limit.capacity", Integer.class, 1);
         int refillTokens = environment.getProperty("pricing.plans." + plan + ".limit.tokens", Integer.class, 1);
-        int refillDuration = environment.getProperty("pricing.plans." + plan + ".refill.rate", Integer.class, 1);
-        return Bandwidth.classic(capacity, Refill.intervally(refillTokens, Duration.ofHours(refillDuration)));
+        int refillDuration = environment.getProperty("pricing.plans.refill.rate.in.minutes", Integer.class, 1);
+
+        return Bandwidth.builder()
+                .capacity(capacity)
+                .refillIntervally(refillTokens, Duration.ofMinutes(refillDuration))
+                .build();
     }
 
     static PricingPlan resolvePlanFromKey(String apiKey) {
         if (apiKey == null || apiKey.isEmpty()) {
             return FREE;
         }
-        if (apiKey.startsWith("PX")) {
+        if (apiKey.startsWith("BA")) {
             return BASIC;
         }
-        if (apiKey.startsWith("AX")) {
+        if (apiKey.startsWith("PR")) {
             return PRO;
         }
         return FREE;

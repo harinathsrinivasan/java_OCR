@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ControllerAdvice(assignableTypes = {RegistrationController.class})
 public class RegistrationExceptionHandler extends ResponseExceptionHandler {
 
-
     private static final Logger LOGGER = LoggerFactory.getLogger(RegistrationExceptionHandler.class);
 
     @ExceptionHandler(IllegalStateException.class)

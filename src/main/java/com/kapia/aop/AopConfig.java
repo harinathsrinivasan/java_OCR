@@ -13,7 +13,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 @EnableAspectJAutoProxy
 public class AopConfig {
 
-    @Value("${ServicePerformanceMonitorInterceptor.override-logging-level:${logging.level.aop.com.kapia.ServicePerformanceMonitorInterceptor}}")
+    @Value("${logging.level.ServicePerformance.override:${logging.level.ServicePerformance.default}}")
     private String loggingLevel;
 
     @Pointcut("execution(* com.kapia.ocr.OCRService.processImage(..))")

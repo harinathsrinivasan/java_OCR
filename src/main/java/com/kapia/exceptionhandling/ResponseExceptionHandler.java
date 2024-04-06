@@ -18,25 +18,41 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(ResponseExceptionHandler.class);
 
+    private final static String ERROR_PROCESSING_IMAGE = "Error processing the image";
+    private final static String ERROR_READING_IMAGE = "Error during image reading";
+    private final static String MULTIPART_FILE_CANNOT_BE_NULL = "MultipartFile cannot be null";
+
     @ExceptionHandler(TesseractException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     protected ResponseEntity<Object> handleProcessingException(TesseractException ex) {
-        LOGGER.error("Error processing the image", ex);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing the image");
+        LOGGER.error(ERROR_PROCESSING_IMAGE, ex);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ERROR_PROCESSING_IMAGE);
     }
 
     @ExceptionHandler(IOException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     protected ResponseEntity<Object> handleIOException(IOException ex) {
-        LOGGER.error("Error during image reading", ex);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error during image reading");
+        LOGGER.error(ERROR_READING_IMAGE, ex);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ERROR_READING_IMAGE);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException ex) {
-        LOGGER.error("MultipartFile cannot be null", ex);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("MultipartFile cannot be null");
+        LOGGER.error(MULTIPART_FILE_CANNOT_BE_NULL, ex);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(MULTIPART_FILE_CANNOT_BE_NULL);
+    }
+
+    public static String getErrorProcessingImage() {
+        return ERROR_PROCESSING_IMAGE;
+    }
+
+    public static String getErrorReadingImage() {
+        return ERROR_READING_IMAGE;
+    }
+
+    public static String getMultipartFileCannotBeNull() {
+        return MULTIPART_FILE_CANNOT_BE_NULL;
     }
 
 }

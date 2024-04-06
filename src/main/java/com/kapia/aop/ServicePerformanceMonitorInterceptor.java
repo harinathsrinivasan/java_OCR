@@ -6,6 +6,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.interceptor.AbstractMonitoringInterceptor;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
 
@@ -27,7 +28,7 @@ public class ServicePerformanceMonitorInterceptor extends AbstractMonitoringInte
     }
 
     @Override
-    protected Object invokeUnderTrace(MethodInvocation invocation, Log log) throws Throwable {
+    protected Object invokeUnderTrace(@NonNull MethodInvocation invocation, @NonNull Log log) throws Throwable {
 
         String methodName = invocation.getMethod().getName();
         String className = invocation.getMethod().getDeclaringClass().getSimpleName();

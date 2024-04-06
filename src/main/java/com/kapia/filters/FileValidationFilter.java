@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -17,13 +18,14 @@ import java.util.Arrays;
 public class FileValidationFilter extends OncePerRequestFilter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FileValidationFilter.class);
+
     private static final String ACCEPTED_CONTENT_TYPES = "image/png,image/jpeg";
     private static final String ACCEPTED_EXTENSIONS = ".png,.jpeg,.jpg";
     private static final String ACCEPTED_REQUEST_CONTENT_TYPE = "multipart/form-data";
     private static final String MULTIPART_FILE_NAME = "image";
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(@NonNull HttpServletRequest request,@NonNull HttpServletResponse response,@NonNull FilterChain filterChain) throws ServletException, IOException {
 
         if (!request.getRequestURI().equals("/getOCR")) {
             filterChain.doFilter(request, response);

@@ -50,7 +50,7 @@ public class OCRController {
     })
     @PostMapping(value = "/getOCR", consumes = "multipart/form-data", produces = "text/plain")
     public ResponseEntity<String> processImage(@RequestParam("image") @Parameter(name = "image", description = "Image to be processed") MultipartFile image) throws IOException, TesseractException {
-
+        LOGGER.info("Processing image from request");
         return ResponseEntity.status(HttpStatus.OK).body(ocrService.processImage(image));
 
     }

@@ -1,22 +1,25 @@
 package com.kapia.ocr;
 
 import net.sourceforge.tess4j.TesseractException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-@SpringBootTest
+@ContextConfiguration(classes = {OCRService.class})
+@ExtendWith(SpringExtension.class)
+@ActiveProfiles("test")
 public class TestOCRService {
 
     @Value("${tessdata.path:tessdata}")
@@ -47,14 +50,14 @@ public class TestOCRService {
 
         String response = ocrService.processImage(multipartFile);
 
-        assertEquals(expectedText, response);
+        Assertions.assertEquals(expectedText, response);
 
     }
 
     @Test
     public void givenNoImage_whenProcessImage_thenThrowIllegalArgumentException() {
 
-        assertThrows(IOException.class, () -> ocrService.processImage(null));
+        Assertions.assertThrows(IOException.class, () -> ocrService.processImage(null));
 
     }
 
@@ -62,7 +65,7 @@ public class TestOCRService {
     public void givenInvalidImageType_whenProcessImage_thenThrowIOException() {
 
         MultipartFile multipartFile = new MockMultipartFile("file", "file.txt", "text/plain", "some text".getBytes());
-        assertThrows(IOException.class, () -> ocrService.processImage(multipartFile));
+        Assertions.assertThrows(IOException.class, () -> ocrService.processImage(multipartFile));
 
     }
 

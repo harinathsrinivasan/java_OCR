@@ -1,14 +1,13 @@
 package com.kapia.users;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
 public class ApplicationUser {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "application_user_seq")
+    @SequenceGenerator(name = "application_user_seq", sequenceName = "application_user_seq", allocationSize = 1)
     private Integer id;
 
     private String username;
