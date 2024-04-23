@@ -68,7 +68,7 @@ The following endpoints are available:
 Full documentation is created by OpenApi and available under the `/swagger-ui.html` or `/v3/api-docs`.
 
 ## Configuration
-The application is stored in the `application.properties` file. For deploying with docker, consider setting the following properties:
+The configuration is stored in the `application.properties` file. For deploying with docker, consider setting the following properties:
 
 | Name                    | Corresponding property name            | Default value     | Description                                              |
 | ----------------------- | -------------------------------------- | ----------------- | -------------------------------------------------------- |
